@@ -1,0 +1,2 @@
+# varbox
+A variable box

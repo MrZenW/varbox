@@ -1,0 +1,29 @@
+{
+  "name": "varbox",
+  "version": "0.0.1",
+  "description": "A variable box",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zenboss/varbox.git"
+  },
+  "keywords": [
+    "varbox",
+    "variable",
+    "management",
+    "path",
+    "state",
+    "machine",
+    "observable",
+    "watch"
+  ],
+  "author": "Zen WANG <zenyes@gmail.com> (https://github.com/zenboss)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zenboss/varbox/issues"
+  },
+  "homepage": "https://github.com/zenboss/varbox#readme"
+}

@@ -1,2 +1,2 @@
-# varbox
-A variable box
+# VarBox
+An observable variable box

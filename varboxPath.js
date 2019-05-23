@@ -315,7 +315,7 @@
   }
 
   var PATH_ROOT = '/';
-  function createVarBox(defaultVariable) {
+  function createVarbox(defaultVariable) {
     var rootVariable = {};
     rootVariable[PATH_ROOT] = {};
     if (arguments.length > 0) {
@@ -393,6 +393,6 @@
       }
     };
   }
-  if (typeof module === 'object') module.exports = { createVarBox: createVarBox };
-  if (typeof window === 'object') window.createVarBox = createVarBox;
+  if (typeof module === 'object') module.exports = { createVarbox: createVarbox };
+  if (typeof window === 'object') window.createVarbox = createVarbox;
 })();

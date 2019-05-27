@@ -1,6 +1,7 @@
 ;
 "use strict";
 (function VarBoxModuleSpace(undefined) {
+  var SEPARATOR_CHAR = '/';
   function BLANK_FUNCTION () {}
   function DEFAULT_EXIST_CHECKER (arg) {
     return _has(arg.variable, arg.key);
@@ -62,7 +63,7 @@
             variable: variable,
             key: key,
             path: p,
-            pathString: p.join('.'),
+            pathString: p.join(SEPARATOR_CHAR),
           });
         }
       } else {
@@ -76,7 +77,7 @@
             variable: variable,
             key: key,
             path: p,
-            pathString: p.join('.'),
+            pathString: p.join(SEPARATOR_CHAR),
           });
         }
       }
@@ -92,7 +93,7 @@
     callback = callback || BLANK_FUNCTION;
     var pathArrayString;
     return $deepMap(rootVariable, pathArray, function _deepIntoSet(arg) {
-      pathArrayString = pathArrayString || (_isArray(arg.targetPath) ? arg.targetPath.join('.') : '');
+      pathArrayString = pathArrayString || (_isArray(arg.targetPath) ? arg.targetPath.join(SEPARATOR_CHAR) : '');
       if (arg.path.length === arg.targetPath.length) {
         var eventType;
         var oldValue = arg.variable[arg.key];
@@ -109,7 +110,7 @@
           variable: arg.variable,
           key: arg.key,
           path: arg.path,
-          pathString: arg.path.join('.'),
+          pathString: arg.path.join(SEPARATOR_CHAR),
           targetPath: arg.targetPath,
           targetPathString: pathArrayString,
           oldValue: oldValue,
@@ -123,7 +124,7 @@
           variable: arg.variable,
           key: arg.key,
           path: arg.path,
-          pathString: arg.path.join('.'),
+          pathString: arg.path.join(SEPARATOR_CHAR),
           targetPath: arg.targetPath,
           targetPathString: pathArrayString,
           oldValue: undefined,
@@ -176,16 +177,19 @@
     var pathArrayString;
     var isBack = true;
     return $deepMap(rootVariable, pathArray, function _deepIntoDelete(arg) {
+      if (!DEFAULT_EXIST_CHECKER(arg)) {
+        return false;
+      }
       if (arg.path.length === arg.targetPath.length) {
         var oldValue = arg.variable[arg.key];
-        pathArrayString = pathArrayString || (_isArray(arg.targetPath) ? arg.targetPath.join('.') : '');
+        pathArrayString = pathArrayString || (_isArray(arg.targetPath) ? arg.targetPath.join(SEPARATOR_CHAR) : '');
         delete arg.variable[arg.key];
         callback({
           eventType: 'delete',
           variable: arg.variable,
           key: arg.key,
           path: arg.path,
-          pathString: arg.path.join('.'),
+          pathString: arg.path.join(SEPARATOR_CHAR),
           targetPath: arg.targetPath,
           targetPathString: pathArrayString,
           oldValue: oldValue,
@@ -206,7 +210,7 @@
     }
     checker = checker || DEFAULT_EXIST_CHECKER;
     pathArray = [].concat(pathArray);
-    var pathArrayString = pathArray.join('.');
+    var pathArrayString = pathArray.join(SEPARATOR_CHAR);
     var parentVariable;
     var rootChildren = rootVariable;
 
@@ -219,7 +223,7 @@
         key: currentKey,
         value: Object(rootChildren)[currentKey],
         path: currentPath,
-        pathString: currentPath.join('.'),
+        pathString: currentPath.join(SEPARATOR_CHAR),
         targetPath: pathArray,
         targetPathString: pathArrayString,
       })) {
@@ -254,9 +258,9 @@
       key: currentKey,
       value: Object(rootVariable)[currentKey],
       path: currentPath,
-      pathString: currentPath.join('.'),
+      pathString: currentPath.join(SEPARATOR_CHAR),
       targetPath: pathArray,
-      targetPathString: pathArray.join('.'),
+      targetPathString: pathArray.join(SEPARATOR_CHAR),
     })
   }
   var _everyNodeDuplicateCache = {};
@@ -284,7 +288,7 @@
             key: key,
             value: v,
             path: p,
-            pathString: p.join('.'),
+            pathString: p.join(SEPARATOR_CHAR),
           });
           $everyNode(v, callback, key, p, contextKey);
         }
@@ -309,7 +313,7 @@
         key: itsKey,
         value: variable,
         path: itsPath,
-        pathString: itsPath.join('.'),
+        pathString: itsPath.join(SEPARATOR_CHAR),
       });
     }
   }
@@ -331,18 +335,18 @@
     return {
       set: function set_(pathArray, val) {
         if (arguments.length < 2) throw new Error('Need two arguments!');
-        if (typeof pathArray === 'string') pathArray = pathArray.split('.');
+        if (typeof pathArray === 'string') pathArray = pathArray.split(SEPARATOR_CHAR);
         if (!_isArray(pathArray)) pathArray = [];
         return $set(rootVariable, [].concat(PATH_ROOT, pathArray), val, _onEvent);
       },
       get: function get_(pathArray) {
         if (arguments.length === 0) return rootVariable[PATH_ROOT];
-        if (typeof pathArray === 'string') pathArray = pathArray.split('.');
+        if (typeof pathArray === 'string') pathArray = pathArray.split(SEPARATOR_CHAR);
         if (!_isArray(pathArray)) pathArray = [];
         return $get(rootVariable, [].concat(PATH_ROOT, pathArray));
       },
       delete: function delete_(pathArray) {
-        if (typeof pathArray === 'string') pathArray = pathArray.split('.');
+        if (typeof pathArray === 'string') pathArray = pathArray.split(SEPARATOR_CHAR);
         if (!_isArray(pathArray)) pathArray = [];
         return $delete(rootVariable, [].concat(PATH_ROOT, pathArray), _onEvent);
       },
@@ -355,12 +359,12 @@
         };
       },
       has: function has_(pathArray) {
-        if (typeof pathArray === 'string') pathArray = pathArray.split('.');
+        if (typeof pathArray === 'string') pathArray = pathArray.split(SEPARATOR_CHAR);
         if (!_isArray(pathArray)) pathArray = [];
         return $has(rootVariable, [].concat(PATH_ROOT, pathArray));
       },
       destory: function destory_(pathArray) {
-        if (typeof pathArray === 'string') pathArray = pathArray.split('.');
+        if (typeof pathArray === 'string') pathArray = pathArray.split(SEPARATOR_CHAR);
         if (!_isArray(pathArray)) pathArray = [];
         pathArray = [].concat(PATH_ROOT, pathArray);
         var v = $deepMap(rootVariable, pathArray);
@@ -375,12 +379,12 @@
         return $deepBack(rootVariable, pathArray, checker);
       },
       merge: function merge_(pathArray, val) {
-        if (typeof pathArray === 'string') pathArray = pathArray.split('.');
+        if (typeof pathArray === 'string') pathArray = pathArray.split(SEPARATOR_CHAR);
         if (!_isArray(pathArray)) pathArray = [];
         return $merge(rootVariable, [].concat(PATH_ROOT, pathArray), val, _onEvent);
       },
       everyNode: function everyNode_(pathArray, callback) {
-        if (typeof pathArray === 'string') pathArray = pathArray.split('.');
+        if (typeof pathArray === 'string') pathArray = pathArray.split(SEPARATOR_CHAR);
         if (!_isArray(pathArray)) pathArray = [];
         pathArray = [].concat(PATH_ROOT, pathArray);
         var v = $deepMap(rootVariable, pathArray);

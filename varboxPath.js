@@ -318,7 +318,7 @@
     }
   }
 
-  var PATH_ROOT = '/';
+  var PATH_ROOT = 'root';
   function createVarbox(defaultVariable) {
     var rootVariable = {};
     rootVariable[PATH_ROOT] = {};

@@ -19,62 +19,65 @@ var box = Varbox.createVarbox();
 // key/user/name = ["key", "user", "name"]
 // Also, you are not able to use a String path to describe a path if you have a slash(/) in your path
 // For example, there isn't any method to describe ["key/a", "user", "name"] as a String.
-
 box.set('key/user/name', 'Varbox');
-console.log('mark 1: %o', box.get());
+console.log('#set "key/usr/name" to "Varbox": %o', box.get());
 
 box.merge('key/user/name2', 'Varbox2');
-console.log('mark 2: %o', box.get());
-
-box.destory('key/user');
-console.log('mark 3: %o', box.get());
-
-box.destory();
-console.log('mark 4: %o', box.get());
-
-box.delete('key', 'Varbox2');
-console.log('mark 5: %o', box.get());
+console.log('#merge "key/user/name2" to Varbox2: %o', box.get());
 
 box.watch((event) => {
-  console.log('event: %o', event);
+  console.log('#event: %o', event);
 })
 
-box.set('newkey/user/name', 'new Varbox');
-console.log('mark 6: %o', box.get());
+box.destory('key/user');
+console.log('#destory "key/user": %o', box.get());
+
+box.destory();
+console.log('#destory whole varbox: %o', box.get());
+
+box.delete('key', 'Varbox2');
+console.log('#delete "key"', box.get());
+
+box.set(null, '123');
+
+// box.set('newkey/user/name', 'new Varbox');
+console.log('#set the varbox to "123": %o', box.get());
 ```
 **output:**
 ```
-mark 1: { key: { user: { name: 'Varbox' } } }
-mark 2: { key: { user: { name: 'Varbox', name2: 'Varbox2' } } }
-mark 3: { key: { user: {} } }
-mark 4: {}
-mark 5: {}
-event: { eventType: 'add',
-  variable: { newkey: {} },
-  key: 'newkey',
-  path: [ '/', 'newkey', [length]: 2 ],
-  pathString: '//newkey',
-  targetPath: [ '/', 'newkey', 'user', 'name', [length]: 4 ],
-  targetPathString: '//newkey/user/name',
-  oldValue: undefined,
-  newValue: {} }
-event: { eventType: 'add',
-  variable: { user: {} },
-  key: 'user',
-  path: [ '/', 'newkey', 'user', [length]: 3 ],
-  pathString: '//newkey/user',
-  targetPath: [ '/', 'newkey', 'user', 'name', [length]: 4 ],
-  targetPathString: '//newkey/user/name',
-  oldValue: undefined,
-  newValue: {} }
-event: { eventType: 'set',
-  variable: { name: 'new Varbox' },
+#set "key/usr/name" to "Varbox": { key: { user: { name: 'Varbox' } } }
+#merge "key/user/name2" to Varbox2: { key: { user: { name: 'Varbox', name2: 'Varbox2' } } }
+#event: { eventType: 'destory',
+  variable: { name2: 'Varbox2' },
   key: 'name',
-  path: [ '/', 'newkey', 'user', 'name', [length]: 4 ],
-  pathString: '//newkey/user/name',
-  targetPath: [ '/', 'newkey', 'user', 'name', [length]: 4 ],
-  targetPathString: '//newkey/user/name',
-  oldValue: undefined,
-  newValue: 'new Varbox' }
-mark 6: { newkey: { user: { name: 'new Varbox' } } }
+  path: [ 'root', 'key', 'user', 'name', [length]: 4 ],
+  pathString: 'root/key/user/name' }
+#event: { eventType: 'destory',
+  variable: {},
+  key: 'name2',
+  path: [ 'root', 'key', 'user', 'name2', [length]: 4 ],
+  pathString: 'root/key/user/name2' }
+#destory "key/user": { key: { user: {} } }
+#event: { eventType: 'destory',
+  variable: {},
+  key: 'user',
+  path: [ 'root', 'key', 'user', [length]: 3 ],
+  pathString: 'root/key/user' }
+#event: { eventType: 'destory',
+  variable: {},
+  key: 'key',
+  path: [ 'root', 'key', [length]: 2 ],
+  pathString: 'root/key' }
+#destory whole varbox: {}
+#delete "key" {}
+#event: { eventType: 'set',
+  variable: { root: '123' },
+  key: 'root',
+  path: [ 'root', [length]: 1 ],
+  pathString: 'root',
+  targetPath: [ 'root', [length]: 1 ],
+  targetPathString: 'root',
+  oldValue: {},
+  newValue: '123' }
+#set the varbox to "123": '123'
 ```

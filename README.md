@@ -9,8 +9,6 @@ $ npm install varbox
 
 ## Usage
 
-
-
 ```JavaScript
 var Varbox = require('varbox');
 var box = Varbox.createVarbox();
@@ -19,15 +17,17 @@ var box = Varbox.createVarbox();
 // key/user/name = ["key", "user", "name"]
 // Also, you are not able to use a String path to describe a path if you have a slash(/) in your path
 // For example, there isn't any method to describe ["key/a", "user", "name"] as a String.
+var box = Varbox.createVarbox();
+
 box.set('key/user/name', 'Varbox');
 console.log('#set "key/usr/name" to "Varbox": %o', box.get());
 
-box.merge('key/user/name2', 'Varbox2');
-console.log('#merge "key/user/name2" to Varbox2: %o', box.get());
-
-box.watch((event) => {
+var unwatchFunction = box.watch((event) => {
   console.log('#event: %o', event);
 })
+
+box.merge('key/user/name2', 'Varbox2');
+console.log('#merge "key/user/name2" to Varbox2: %o', box.get());
 
 box.destory('key/user');
 console.log('#destory "key/user": %o', box.get());
@@ -39,35 +39,54 @@ box.delete('key', 'Varbox2');
 console.log('#delete "key"', box.get());
 
 box.set(null, '123');
-
-// box.set('newkey/user/name', 'new Varbox');
 console.log('#set the varbox to "123": %o', box.get());
+
+unwatchFunction();
+console.log('#unwatched');
+
+box.set('0', 'number 0');
+console.log('#set "0" to "number 0": %o', box.get());
+console.log('There won\'t be no more event appear there, because the varbox has been unwatched.')
 ```
 **output:**
 ```
 #set "key/usr/name" to "Varbox": { key: { user: { name: 'Varbox' } } }
+#event: { eventType: 'set',
+  variable: { name: 'Varbox', name2: 'Varbox2' },
+  key: 'name2',
+  path: [ 'root', 'key', 'user', 'name2', [length]: 4 ],
+  pathString: 'root/key/user/name2',
+  targetPath: [ 'root', 'key', 'user', 'name2', [length]: 4 ],
+  targetPathString: 'root/key/user/name2',
+  oldValue: undefined,
+  newValue: 'Varbox2',
+  method: 'merge' }
 #merge "key/user/name2" to Varbox2: { key: { user: { name: 'Varbox', name2: 'Varbox2' } } }
 #event: { eventType: 'destory',
   variable: { name2: 'Varbox2' },
   key: 'name',
   path: [ 'root', 'key', 'user', 'name', [length]: 4 ],
-  pathString: 'root/key/user/name' }
+  pathString: 'root/key/user/name',
+  method: 'destory' }
 #event: { eventType: 'destory',
   variable: {},
   key: 'name2',
   path: [ 'root', 'key', 'user', 'name2', [length]: 4 ],
-  pathString: 'root/key/user/name2' }
+  pathString: 'root/key/user/name2',
+  method: 'destory' }
 #destory "key/user": { key: { user: {} } }
 #event: { eventType: 'destory',
   variable: {},
   key: 'user',
   path: [ 'root', 'key', 'user', [length]: 3 ],
-  pathString: 'root/key/user' }
+  pathString: 'root/key/user',
+  method: 'destory' }
 #event: { eventType: 'destory',
   variable: {},
   key: 'key',
   path: [ 'root', 'key', [length]: 2 ],
-  pathString: 'root/key' }
+  pathString: 'root/key',
+  method: 'destory' }
 #destory whole varbox: {}
 #delete "key" {}
 #event: { eventType: 'set',
@@ -78,6 +97,10 @@ console.log('#set the varbox to "123": %o', box.get());
   targetPath: [ 'root', [length]: 1 ],
   targetPathString: 'root',
   oldValue: {},
-  newValue: '123' }
+  newValue: '123',
+  method: 'set' }
 #set the varbox to "123": '123'
+#unwatched
+#set "0" to "number 0": { '0': 'number 0' }
+There won't be no more event appear there, because the varbox has been unwatched.
 ```

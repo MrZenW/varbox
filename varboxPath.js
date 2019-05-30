@@ -438,7 +438,7 @@
       return _unwatchGenerator(watcherIdCounter);
     }
     function watchPath_ (matchPath, watcher) {
-      if ('function' !== typeof watcher) throw new Error('Watcher should be a function');
+      if (_isFunction(watcher)) throw new Error('Watcher should be a function');
       if (_isNone(matchPath)) return watch_(watcher);
       var matchParseResult = _parseMatchPath(matchPath);
       return watch_(function watcherOnWatch (event) {

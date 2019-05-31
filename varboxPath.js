@@ -536,6 +536,7 @@
       everyNode: everyNode_
     };
   }
-  if (typeof module === 'object') module.exports = { createVarbox: createVarbox };
-  if (typeof window === 'object') window.createVarbox = createVarbox;
+  var Varbox = { createVarbox: createVarbox };
+  if (typeof module === 'object') module.exports = Varbox;
+  if (typeof window === 'object') window.Varbox = Varbox;
 })();

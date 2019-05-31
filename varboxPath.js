@@ -2,6 +2,9 @@
 "use strict";
 (function VarBoxModuleSpace(undefined) {
   var PATH_SEPARATOR = '/';
+  var MATCHING_TYPE_PATH = 'MATCHING_TYPE_PATH';
+  var MATCHING_TYPE_VARIABLE = 'MATCHING_TYPE_VARIABLE';
+
   function BLANK_FUNCTION () {}
   function DEFAULT_EXIST_CHECKER (arg) {
     return _has(arg.variable, arg.key);
@@ -354,12 +357,15 @@
     };
   }
 
-  function _checkIfMatched(event, matchPathInfo) {
+  function _checkIfMatchedForWatchVariable(event, matchPathInfo) {
     var isMatchPathArray = matchPathInfo.isMatchPathArray;
     var isMatchPathRegExp = matchPathInfo.isMatchPathRegExp;
     var matchPath = matchPathInfo.matchPath;
-    var isMatched = false;
-    if (isMatchPathArray) {
+
+    if (isMatchPathRegExp) {
+      return matchPath.test(event.pathString);
+    } else if (isMatchPathArray) {
+      var isMatched = false;
       for (var i = 0; i < matchPath.length && i < event.path.length; i += 1) {
         var currentPathSlice = event.path[i];
         var forMatch = matchPath[i];
@@ -368,16 +374,40 @@
         } else if (forMatch instanceof RegExp && forMatch.test(currentPathSlice)) {
           isMatched = true;
         } else {
-          isMatched = false;
-          break;
+          return false;
         }
       }
-    } else if (isMatchPathRegExp) {
-      isMatched = matchPath.test(event.pathString);
+      return isMatched;
     } else {
-      isMatched = (matchPath === event.pathString);
+      return (matchPath.indexOf(event.pathString) === 0);
     }
-    return isMatched;
+  }
+
+  function _checkIfMatchedForWatchPath(event, matchPathInfo) {
+    var isMatchPathArray = matchPathInfo.isMatchPathArray;
+    var isMatchPathRegExp = matchPathInfo.isMatchPathRegExp;
+    var matchPath = matchPathInfo.matchPath;
+
+    if (isMatchPathRegExp) {
+      return matchPath.test(event.pathString);
+    } else if (isMatchPathArray) {
+      if (event.path.length < matchPath.length) return false;
+      var isMatched = false;
+      for (var i = 0; i < matchPath.length && i < event.path.length; i += 1) {
+        var currentPathSlice = event.path[i];
+        var forMatch = matchPath[i];
+        if (forMatch === currentPathSlice) {
+          isMatched = true;
+        } else if (forMatch instanceof RegExp && forMatch.test(currentPathSlice)) {
+          isMatched = true;
+        } else {
+          return false;
+        }
+      }
+      return isMatched;
+    } else {
+      return (event.pathString.indexOf(matchPath) === 0);
+    }
   }
 
   var PATH_ROOT = 'root';
@@ -437,13 +467,22 @@
       watchers[watcherIdCounter] = watcher;
       return _unwatchGenerator(watcherIdCounter);
     }
-    function watchPath_ (matchPath, watcher) {
-      if (_isFunction(watcher)) throw new Error('Watcher should be a function');
+    function watchPath_ (matchPath, watcher, matchType) {
+      if (!_isFunction(watcher)) throw new Error('Watcher should be a function');
       if (_isNone(matchPath)) return watch_(watcher);
       var matchParseResult = _parseMatchPath(matchPath);
-      return watch_(function watcherOnWatch (event) {
-        if(_checkIfMatched(event, matchParseResult)) watcher(event);
-      });
+      if (matchType === MATCHING_TYPE_VARIABLE) {
+        return watch_(function watcherOnWatch (event) {
+          if(_checkIfMatchedForWatchVariable(event, matchParseResult)) watcher(event);
+        });
+      } else {
+        return watch_(function watcherOnWatch (event) {
+          if(_checkIfMatchedForWatchPath(event, matchParseResult)) watcher(event);
+        });
+      }
+    }
+    function watchVariable_ (matchPath, watcher) {
+      return watchPath_(matchPath, watcher, MATCHING_TYPE_VARIABLE);
     }
     function has_(pathArray) {
       if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
@@ -488,6 +527,7 @@
       delete: delete_,
       watch: watch_,
       watchPath: watchPath_,
+      watchVariable: watchVariable_,
       has: has_,
       destory: destory_,
       deepMap: deepInto_,

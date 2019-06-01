@@ -103,9 +103,10 @@
               (isObjectType = _isObject(oldValue)) ||
               (isArrayType = _isArray(oldValue))
             )) {
-          if (isObjectType) oldValue = _merge({}, oldValue);
-          if (isArrayType) oldValue = _merge([], oldValue);
-          arg.variable[arg.key] = _merge(oldValue, newValue);
+          var clonedValue = {};
+          if (isObjectType) clonedValue = _merge({}, oldValue);
+          if (isArrayType) clonedValue = _merge([], oldValue);
+          arg.variable[arg.key] = _merge(clonedValue, newValue);
           eventType = 'merge';
         } else {
           arg.variable[arg.key] = newValue;
@@ -122,8 +123,13 @@
           oldValue: oldValue,
           newValue: arg.variable[arg.key],
         });
-      } else if (!_has(arg.variable, arg.key) || !_isObject(arg.variable[arg.key])) {
+        return;
+      }
+      var isHaveTheKey = _has(arg.variable, arg.key);
+      if (!isHaveTheKey || !_isObject(arg.variable[arg.key])) {
         // a node but not exists, include null undefined NaN
+        var oldValue = undefined;
+        if (isHaveTheKey) oldValue = arg.variable[arg.key];
         arg.variable[arg.key] = {};
         callback({
           eventType: 'add',
@@ -133,11 +139,12 @@
           pathString: arg.path.join(PATH_SEPARATOR),
           targetPath: arg.targetPath,
           targetPathString: pathArrayString,
-          oldValue: undefined,
+          oldValue: oldValue,
           newValue: arg.variable[arg.key],
         });
+        return;
       }
-      return true;
+      return;
     });
   }
   function $merge(rootVariable, pathArray, newValue, callback) {

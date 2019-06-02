@@ -115,10 +115,8 @@
               (isObjectType = _isObject(oldValue)) ||
               (isArrayType = _isArray(oldValue))
             )) {
-          var clonedValue = {};
-          if (isObjectType) clonedValue = _merge({}, oldValue);
-          if (isArrayType) clonedValue = _merge([], oldValue);
-          arg.variable[arg.key] = _merge(clonedValue, newValue);
+          var cloningBase = isArrayType ? [] : {};
+          arg.variable[arg.key] = _merge(cloningBase, oldValue, newValue);
           eventType = 'merge';
         } else {
           arg.variable[arg.key] = newValue;

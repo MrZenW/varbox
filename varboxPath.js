@@ -40,18 +40,30 @@
     if (_isNone(target)) throw new TypeError('Cannot convert undefined or null to object');
     var to = Object(target);
     var isTargetArray = _isArray(target);
-    for (var i = 1; i < arguments.length; i += 1) {
-      var nextSource = Object(arguments[i]);
-      if (nextSource) {
-        for (var nextKey in nextSource) {
-          if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
-            isTargetArray ? to.push(nextSource[nextKey]) :to[nextKey] = nextSource[nextKey];
+    if (isTargetArray) {
+      for (var i = 1; i < arguments.length; i += 1) {
+        var nextSource = arguments[i];
+        if (_isArray(nextSource)) {
+          to.push.apply(to, nextSource);
+        } else {
+          to.push.call(to, nextSource);
+        }
+      }
+    } else {
+      for (var i = 1; i < arguments.length; i += 1) {
+        var nextSource = Object(arguments[i]);
+        if (nextSource) {
+          for (var nextKey in nextSource) {
+            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+              to[nextKey] = nextSource[nextKey];
+            }
           }
         }
       }
     }
     return to;
   }
+
   function $destory(variable, callback, $path) {
     if (_isObject(variable)) {
       $path = $path || [];

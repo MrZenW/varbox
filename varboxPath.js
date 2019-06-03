@@ -103,7 +103,7 @@
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
     if (!_isFunction) callback = BLANK_FUNCTION;
     var pathArrayString;
-    return $deepMap(rootVariable, pathArray, function _deepIntoSet(arg) {
+    return $nodeMap(rootVariable, pathArray, function _nodeMapSet(arg) {
       pathArrayString = pathArrayString || (_isArray(arg.targetPath) ? arg.targetPath.join(PATH_SEPARATOR) : '');
       if (arg.path.length === arg.targetPath.length) {
         var eventType;
@@ -183,7 +183,7 @@
   function $get(rootVariable, pathArray) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
-    return $deepMap(rootVariable, pathArray).value;
+    return $nodeMap(rootVariable, pathArray).value;
   }
   function $delete(rootVariable, pathArray, callback) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
@@ -191,7 +191,7 @@
     if (!_isFunction) callback = BLANK_FUNCTION;
     var pathArrayString;
     var isBack = true;
-    return $deepMap(rootVariable, pathArray, function _deepIntoDelete(arg) {
+    return $nodeMap(rootVariable, pathArray, function _nodeMapDelete(arg) {
       if (!DEFAULT_EXIST_CHECKER(arg)) return false;
       if (arg.path.length === arg.targetPath.length) {
         var oldValue = arg.variable[arg.key];
@@ -215,10 +215,12 @@
       return true;
     }, isBack).value;
   }
+
   function $has(rootVariable, pathArray) {
-    return $deepMap(rootVariable, pathArray).isExist;
+    return $nodeMap(rootVariable, pathArray).isExist;
   }
-  function $deepMap(rootVariable, pathArray, checker) {
+
+  function $nodeMap(rootVariable, pathArray, checker) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
     checker = checker || DEFAULT_EXIST_CHECKER;
@@ -255,14 +257,15 @@
       variable: parentVariable,
     };
   }
-  function $deepBack(rootVariable, pathArray, checker, $i) {
+
+  function $nodeBackMap(rootVariable, pathArray, checker, $i) {
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
     checker = checker || DEFAULT_EXIST_CHECKER;
     if ('number' !== typeof $i) $i = pathArray.length - 1;
     if ($i < 0) return;
     pathArray = [].concat(pathArray);
     var currentKey = pathArray[$i];
-    $deepBack(_isObject(rootVariable) ? rootVariable[currentKey] : {}, pathArray, checker, $i - 1);
+    $nodeBackMap(_isObject(rootVariable) ? rootVariable[currentKey] : {}, pathArray, checker, $i - 1);
     var currentPath = pathArray.slice(0, $i);
     checker({
       variable: rootVariable,
@@ -274,6 +277,7 @@
       targetPathString: pathArray.join(PATH_SEPARATOR),
     })
   }
+
   var _everyNodeDuplicateCache = {};
   var _everyNodeDuplicateCacheCounter = 0;
   function $everyNode(variable, callback, itsKey, itsPath, contextKey) {
@@ -430,9 +434,11 @@
   var PATH_ROOT = 'root';
   function createVarbox(defaultVariable) {
     var rootVariable = {};
-    rootVariable[PATH_ROOT] = {};
+    
     if (arguments.length > 0) {
       rootVariable[PATH_ROOT] = defaultVariable;
+    } else {
+      rootVariable[PATH_ROOT] = {};
     }
     var watcherIdCounter = 0;
     var watchers = {};
@@ -510,16 +516,16 @@
       if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
       if (!_isArray(pathArray)) pathArray = [];
       pathArray = [].concat(PATH_ROOT, pathArray);
-      var v = $deepMap(rootVariable, pathArray);
+      var v = $nodeMap(rootVariable, pathArray);
       if (v.isExist) {
         $destory(v.value, _onEventForDestory, pathArray);
       }
     }
-    function deepInto_(pathArray, checker) {
-      return $deepMap(rootVariable, pathArray, checker);
+    function nodeMap_(pathArray, checker) {
+      return $nodeMap(rootVariable, pathArray, checker);
     }
-    function deepBack_(pathArray, checker) {
-      return $deepBack(rootVariable, pathArray, checker);
+    function nodeBackMap_(pathArray, checker) {
+      return $nodeBackMap(rootVariable, pathArray, checker);
     }
     function merge_(pathArray, val) {
       if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
@@ -530,7 +536,7 @@
       if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
       if (!_isArray(pathArray)) pathArray = [];
       pathArray = [].concat(PATH_ROOT, pathArray);
-      var v = $deepMap(rootVariable, pathArray);
+      var v = $nodeMap(rootVariable, pathArray);
       if (v.isExist) {
         // $destory(v.value, _onEvent, pathArray);
         return $everyNode(v.value, callback);
@@ -539,21 +545,21 @@
       }
     }
     return {
-      set: set_,
       get: get_,
+      set: set_,
+      merge: merge_,
+      has: has_,
       delete: delete_,
+      destory: destory_,
       watch: watch_,
       watchPath: watchPath_,
       watchVariable: watchVariable_,
-      has: has_,
-      destory: destory_,
-      deepMap: deepInto_,
-      deepBack: deepBack_,
-      merge: merge_,
+      nodeMap: nodeMap_,
+      nodeBackMap: nodeBackMap_,
       everyNode: everyNode_
     };
   }
-  var Varbox = { createVarbox: createVarbox };
+  var Varbox = { create: createVarbox };
   if (typeof module === 'object') module.exports = Varbox;
   if (typeof window === 'object') window.Varbox = Varbox;
 })();

@@ -1,6 +1,6 @@
 var Varbox = require('./index');
 // console.log(Varbox);
-var box = Varbox.createVarbox();
+var box = Varbox.create();
 
 box.set('key/user/name', 'Varbox');
 console.log('#set "key/usr/name" to "Varbox": %o', box.get());

@@ -1,6 +1,6 @@
 var Varbox = require('../index');
 
-var box = Varbox.createVarbox();
+var box = Varbox.create();
 
 var unwatchVariableFunction = box.watchVariable('country/state/DC', (event) => {
   console.log('#event from watchVariable: %o', event);

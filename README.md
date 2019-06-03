@@ -7,103 +7,319 @@ An observable variable box
 $ npm install varbox
 ```
 
-## Usage
+## API
+
+----------
+
+### Varbox.<strong>createVarbox()</strong>
+
+Create a variable box
 
 ```JavaScript
-var Varbox = require('varbox');
-var box = Varbox.createVarbox();
-
-// You can use either a String or an Array to describe a path
-// key/user/name = ["key", "user", "name"]
-// Also, you are not able to use a String path to describe a path if you have a slash(/) in your path
-// For example, there isn't any method to describe ["key/a", "user", "name"] as a String.
-var box = Varbox.createVarbox();
-
-box.set('key/user/name', 'Varbox');
-console.log('#set "key/usr/name" to "Varbox": %o', box.get());
-
-var unwatchFunction = box.watch((event) => {
-  console.log('#event: %o', event);
-})
-
-box.merge('key/user/name2', 'Varbox2');
-console.log('#merge "key/user/name2" to Varbox2: %o', box.get());
-
-box.destory('key/user');
-console.log('#destory "key/user": %o', box.get());
-
-box.destory();
-console.log('#destory whole varbox: %o', box.get());
-
-box.delete('key', 'Varbox2');
-console.log('#delete "key"', box.get());
-
-box.set(null, '123');
-console.log('#set the varbox to "123": %o', box.get());
-
-unwatchFunction();
-console.log('#unwatched');
-
-box.set('0', 'number 0');
-console.log('#set "0" to "number 0": %o', box.get());
-console.log('There won\'t be no more event appear there, because the varbox has been unwatched.')
+var box = Varbox.create();
 ```
-**output:**
+
+----------
+
+### Varbox.box#<strong>get(path)</strong>
+
+Get a value from the path of the box
+
+```JavaScript
+box.get('classrooms/A/students/Ruofei/age');
+// or
+box.get(['classrooms', 'A','students', 'Ruofei', 'age']);
 ```
-#set "key/usr/name" to "Varbox": { key: { user: { name: 'Varbox' } } }
-#event: { eventType: 'set',
+
+The path argument could be an `Array` or `String`, any other type of argument will override to an empty array `[]` .
+
+----------
+
+### Varbox.box#<strong>set(path, value)</strong>
+
+Set a value to the path of the box
+
+```JavaScript
+box.set('classrooms/A/students/Ruofei/age', 4);
+// or
+box.set(['classrooms', 'A','students', 'Ruofei', 'age'], 4);
+```
+
+The path argument could be an `Array` or `String`, any other type of argument will override to an empty array `[]` .
+
+----------
+
+### Varbox.box#<strong>merge(path, value)</strong>
+
+Set `a new variable` to the path of the box.
+
+```JavaScript
+box.merge('classrooms/A/students/Ruofei', { isAbsent: false });
+// or
+box.merge(['classrooms', 'A','students', 'Ruofei'], { isAbsent: false });
+```
+
+The new variable is merged from the original value and the value argument.
+
+The path argument could be an `Array` or `String`, any other type of argument will override to an empty array `[]` .
+
+----------
+
+### Varbox.box#<strong>has(path)</strong>
+
+Return `true` or `false` to describe if the path exists.
+
+```JavaScript
+box.has('classrooms/A/students/Ruofei');
+// or
+box.has(['classrooms', 'A','students', 'Ruofei']);
+```
+
+----------
+
+### Varbox.box#<strong>delete(path)</strong>
+
+Delete a variable which on the path.
+
+```JavaScript
+box.delete('classrooms/A/students/Ruofei');
+// or
+box.delete(['classrooms', 'A','students', 'Ruofei']);
+```
+
+----------
+
+### Varbox.box#<strong>destory(path)</strong>
+
+Delete all of the properties of all of the variables on and under the path argument.
+
+```JavaScript
+box.destory('classrooms/A/students');
+// or
+box.destory(['classrooms', 'A','students']);
+```
+
+----------
+
+### Varbox.box#<strong>watch(watcher)</strong>
+
+Watching any change of the box.
+
+```JavaScript
+box.watch(function watcher(event) {
+  console.log(event);
+});
+```
+
+The watcher function has an argument which used to describe what change happened.
+
+```JavaScript
+{
+  eventType: 'set', // set, add, merge, delete, destory
   variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
-  path: [ 'root', 'key', 'user', 'name2', [length]: 4 ],
-  pathString: 'root/key/user/name2',
-  targetPath: [ 'root', 'key', 'user', 'name2', [length]: 4 ],
-  targetPathString: 'root/key/user/name2',
+  path: [ 'root', 'varbox', 'name2' ],
+  pathString: 'root/varbox/name2',
+  targetPath: [ 'root', 'varbox', 'name2' ],
+  targetPathString: 'root/varbox/name2',
   oldValue: undefined,
   newValue: 'Varbox2',
-  method: 'merge' }
-#merge "key/user/name2" to Varbox2: { key: { user: { name: 'Varbox', name2: 'Varbox2' } } }
-#event: { eventType: 'destory',
-  variable: { name2: 'Varbox2' },
-  key: 'name',
-  path: [ 'root', 'key', 'user', 'name', [length]: 4 ],
-  pathString: 'root/key/user/name',
-  method: 'destory' }
-#event: { eventType: 'destory',
-  variable: {},
-  key: 'name2',
-  path: [ 'root', 'key', 'user', 'name2', [length]: 4 ],
-  pathString: 'root/key/user/name2',
-  method: 'destory' }
-#destory "key/user": { key: { user: {} } }
-#event: { eventType: 'destory',
-  variable: {},
-  key: 'user',
-  path: [ 'root', 'key', 'user', [length]: 3 ],
-  pathString: 'root/key/user',
-  method: 'destory' }
-#event: { eventType: 'destory',
-  variable: {},
-  key: 'key',
-  path: [ 'root', 'key', [length]: 2 ],
-  pathString: 'root/key',
-  method: 'destory' }
-#destory whole varbox: {}
-#delete "key" {}
-#event: { eventType: 'set',
-  variable: { root: '123' },
-  key: 'root',
-  path: [ 'root', [length]: 1 ],
-  pathString: 'root',
-  targetPath: [ 'root', [length]: 1 ],
-  targetPathString: 'root',
-  oldValue: {},
-  newValue: '123',
-  method: 'set' }
-#set the varbox to "123": '123'
-#unwatched
-#set "0" to "number 0": { '0': 'number 0' }
-There won't be no more event appear there, because the varbox has been unwatched.
+  method: 'merge' 
+}
 ```
+
+----------
+
+### Varbox.box#<strong>watchPath(path, watcher)</strong>
+
+Watching all of the paths which ***UNDER*** the path argument of the box.
+
+```JavaScript
+box.watchPath('classrooms/A/students', function watcher(event) {
+  console.log(event);
+});
+// or
+box.watchPath(['classrooms', 'A', 'students'], function watcher(event) {
+  console.log(event);
+});
+// or
+box.watchPath('classrooms/+/students', function watcher(event) {
+  // + will match noly one node in the path.
+  console.log(event);
+});
+// or
+box.watchPath('classrooms/#/students', function watcher(event) {
+  // # will match at least one node in the path.
+  console.log(event);
+});
+// or
+box.watchPath(/^classrooms\/.*\/students/, function watcher(event) {
+  // this example used to show you a path is can be a RegExp.
+  console.log(event);
+});
+```
+
+The path argument could be an `Array` or `String` or `RegExp`, any other type of argument will call the `Varbox.box#watch(watcher)` function.
+
+The watcher function has an argument which used to describe what change happened.
+
+```JavaScript
+{
+  eventType: 'set', // set, add, merge, delete, destory
+  variable: { name: 'Varbox', name2: 'Varbox2' },
+  key: 'name2',
+  path: [ 'root', 'varbox', 'name2' ],
+  pathString: 'root/varbox/name2',
+  targetPath: [ 'root', 'varbox', 'name2' ],
+  targetPathString: 'root/varbox/name2',
+  oldValue: undefined,
+  newValue: 'Varbox2',
+  method: 'merge' 
+}
+```
+
+----------
+
+### Varbox.box#<strong>watchVariable()</strong>
+
+Watching all of the paths which ***ABOVE*** the path argument of the box.
+
+```JavaScript
+box.watchPath('classrooms/A/students', function watcher(event) {
+  console.log(event);
+});
+// or
+box.watchPath(['classrooms', 'A', 'students'], function watcher(event) {
+  console.log(event);
+});
+// or
+box.watchPath('classrooms/+/students', function watcher(event) {
+  // + will match noly one node in the path.
+  console.log(event);
+});
+// or
+box.watchPath('classrooms/#/students', function watcher(event) {
+  // # will match at least one node in the path.
+  console.log(event);
+});
+// or
+box.watchPath(/^classrooms\/.*\/students/, function watcher(event) {
+  // this example used to show you a path is can be a RegExp.
+  console.log(event);
+});
+```
+
+The path argument could be an `Array` or `String` or `RegExp`, any other type of argument will call the `Varbox.box#watch(watcher)` function.
+
+The watcher function has an argument which used to describe what change happened.
+
+```JavaScript
+{
+  eventType: 'set', // set, add, merge, delete, destory
+  variable: { name: 'Varbox', name2: 'Varbox2' },
+  key: 'name2',
+  path: [ 'root', 'varbox', 'name2' ],
+  pathString: 'root/varbox/name2',
+  targetPath: [ 'root', 'varbox', 'name2' ],
+  targetPathString: 'root/varbox/name2',
+  oldValue: undefined,
+  newValue: 'Varbox2',
+  method: 'merge' 
+}
+```
+
+----------
+
+### Varbox.box#<strong>nodeMap(path[, checker])</strong>
+
+Enumerate all of the nodes in the path from left to right which in the argument path.
+
+```JavaScript
+box.nodeMap('classrooms/A/students', function checker(variable) {
+
+});
+```
+
+Argument `checker` is optional, which is a check function you can provide. You can change the varbox in the checker function and return `false` to stop the mapping process, otherwise will continue.
+
+Checker argument:
+```JavaScript
+{
+  variable: variable,
+  key: currentKey,
+  value: variable[currentKey],
+  path: currentPath,
+  pathString: pathString,
+  targetPath: pathArray,
+  targetPathString: targetPathString,
+}
+```
+
+Return:
+```JavaScript
+{
+  isExist: true, // true or false
+  value: theValue,
+  variable: parentVariable,
+}
+```
+
+----------
+
+### Varbox.box#<strong>nodeBackMap(path[, checker])</strong>
+
+Enumerate all of the nodes in the path from right to left which in the argument path.
+
+```JavaScript
+box.nodeBackMap('classrooms/A/students', function checker(variable) {
+
+});
+```
+
+Argument `checker` is optional, which is a check function you can provide. You can change the varbox in the checker function.
+
+Checker argument:
+```JavaScript
+{
+  variable: variable,
+  key: currentKey,
+  value: variable[currentKey],
+  path: currentPath,
+  pathString: pathString,
+  targetPath: pathArray,
+  targetPathString: targetPathString,
+}
+```
+
+
+----------
+
+### Varbox.box#<strong>everyNode(path, callback)</strong>
+
+Map all of the nodes which under the path argument of the box.
+
+The path argument could be an `Array` or `String`, any other type of argument will override to an empty array `[]` .
+
+```JavaScript
+box.everyNode('classrooms/A/students', function callback(variable) {
+
+})
+```
+
+Argument `callback` is a callback function that you can provide. You can change the varbox in the function.
+
+Callback function argument:
+```JavaScript
+{
+  variable: variable,
+  key: key,
+  value: value,
+  path: path,
+  pathString: pathString,
+}
+```
+
+----------
 
 ## License
 

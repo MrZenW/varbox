@@ -101,7 +101,7 @@
   function $set(rootVariable, pathArray, newValue, callback, isMerge) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
-    callback = callback || BLANK_FUNCTION;
+    if (!_isFunction) callback = BLANK_FUNCTION;
     var pathArrayString;
     return $deepMap(rootVariable, pathArray, function _deepIntoSet(arg) {
       pathArrayString = pathArrayString || (_isArray(arg.targetPath) ? arg.targetPath.join(PATH_SEPARATOR) : '');
@@ -188,7 +188,7 @@
   function $delete(rootVariable, pathArray, callback) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
-    callback = callback || BLANK_FUNCTION;
+    if (!_isFunction) callback = BLANK_FUNCTION;
     var pathArrayString;
     var isBack = true;
     return $deepMap(rootVariable, pathArray, function _deepIntoDelete(arg) {

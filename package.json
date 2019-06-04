@@ -1,6 +1,6 @@
 {
   "name": "varbox",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "An observable variable box",
   "main": "index.js",
   "scripts": {
@@ -17,10 +17,11 @@
     "path",
     "state",
     "machine",
+    "state machine",
     "observable",
     "watch"
   ],
-  "author": "Zen WANG <zenyes@gmail.com> (https://github.com/zenboss)",
+  "author": "ZenWANG <zenyes@gmail.com> (https://github.com/zenboss)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/zenboss/varbox/issues"

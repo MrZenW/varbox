@@ -6,8 +6,8 @@
   var MATCHING_TYPE_VARIABLE = 'MATCHING_TYPE_VARIABLE';
 
   function BLANK_FUNCTION () {}
-  function DEFAULT_EXIST_CHECKER (arg) {
-    return _has(arg.variable, arg.key);
+  function DEFAULT_EXIST_CHECKER (nodeInfo) {
+    return _has(nodeInfo.variable, nodeInfo.key);
   }
   function _isNone(value) {
     if (value === undefined || value === null) return true;
@@ -101,56 +101,56 @@
   function $set(rootVariable, pathArray, newValue, callback, isMerge) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
-    if (!_isFunction) callback = BLANK_FUNCTION;
+    if (!_isFunction(callback)) callback = BLANK_FUNCTION;
     var pathArrayString;
-    return $nodeMap(rootVariable, pathArray, function _nodeMapSet(arg) {
-      pathArrayString = pathArrayString || (_isArray(arg.targetPath) ? arg.targetPath.join(PATH_SEPARATOR) : '');
-      if (arg.path.length === arg.targetPath.length) {
+    return $nodeMap(rootVariable, pathArray, function _nodeMapSet(nodeInfo) {
+      pathArrayString = pathArrayString || (_isArray(nodeInfo.targetPath) ? nodeInfo.targetPath.join(PATH_SEPARATOR) : '');
+      if (nodeInfo.path.length === nodeInfo.targetPath.length) {
         var eventType;
-        var oldValue = arg.variable[arg.key];
+        var oldValue = nodeInfo.variable[nodeInfo.key];
         var isObjectType;
         var isArrayType;
-        if (isMerge && _has(arg.variable, arg.key) &&
+        if (isMerge && _has(nodeInfo.variable, nodeInfo.key) &&
             (
               (isObjectType = _isObject(oldValue)) ||
               (isArrayType = _isArray(oldValue))
             )) {
           var cloningBase = isArrayType ? [] : {};
-          arg.variable[arg.key] = _merge(cloningBase, oldValue, newValue);
+          nodeInfo.variable[nodeInfo.key] = _merge(cloningBase, oldValue, newValue);
           eventType = 'merge';
         } else {
-          arg.variable[arg.key] = newValue;
+          nodeInfo.variable[nodeInfo.key] = newValue;
           eventType = 'set';
         }
         callback({
           eventType: eventType,
-          variable: arg.variable,
-          key: arg.key,
-          path: arg.path,
-          pathString: arg.path.join(PATH_SEPARATOR),
-          targetPath: arg.targetPath,
+          variable: nodeInfo.variable,
+          key: nodeInfo.key,
+          path: nodeInfo.path,
+          pathString: nodeInfo.path.join(PATH_SEPARATOR),
+          targetPath: nodeInfo.targetPath,
           targetPathString: pathArrayString,
           oldValue: oldValue,
-          newValue: arg.variable[arg.key],
+          newValue: nodeInfo.variable[nodeInfo.key],
         });
         return;
       }
-      var isHaveTheKey = _has(arg.variable, arg.key);
-      if (!isHaveTheKey || !_isObject(arg.variable[arg.key])) {
+      var isHaveTheKey = _has(nodeInfo.variable, nodeInfo.key);
+      if (!isHaveTheKey || !_isObject(nodeInfo.variable[nodeInfo.key])) {
         // a node but not exists, include null undefined NaN
         var oldValue = undefined;
-        if (isHaveTheKey) oldValue = arg.variable[arg.key];
-        arg.variable[arg.key] = {};
+        if (isHaveTheKey) oldValue = nodeInfo.variable[nodeInfo.key];
+        nodeInfo.variable[nodeInfo.key] = {};
         callback({
           eventType: 'add',
-          variable: arg.variable,
-          key: arg.key,
-          path: arg.path,
-          pathString: arg.path.join(PATH_SEPARATOR),
-          targetPath: arg.targetPath,
+          variable: nodeInfo.variable,
+          key: nodeInfo.key,
+          path: nodeInfo.path,
+          pathString: nodeInfo.path.join(PATH_SEPARATOR),
+          targetPath: nodeInfo.targetPath,
           targetPathString: pathArrayString,
           oldValue: oldValue,
-          newValue: arg.variable[arg.key],
+          newValue: nodeInfo.variable[nodeInfo.key],
         });
         return;
       }
@@ -188,26 +188,26 @@
   function $delete(rootVariable, pathArray, callback) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
-    if (!_isFunction) callback = BLANK_FUNCTION;
+    if (!_isFunction(callback)) callback = BLANK_FUNCTION;
     var pathArrayString;
     var isBack = true;
-    return $nodeMap(rootVariable, pathArray, function _nodeMapDelete(arg) {
-      if (!DEFAULT_EXIST_CHECKER(arg)) return false;
-      if (arg.path.length === arg.targetPath.length) {
-        var oldValue = arg.variable[arg.key];
-        pathArrayString = pathArrayString || (_isArray(arg.targetPath) ? arg.targetPath.join(PATH_SEPARATOR) : '');
-        if (_isArray(arg.variable)) {
-          arg.variable.splice(arg.key, 1);
+    return $nodeMap(rootVariable, pathArray, function _nodeMapDelete(nodeInfo) {
+      if (!DEFAULT_EXIST_CHECKER(nodeInfo)) return false;
+      if (nodeInfo.path.length === nodeInfo.targetPath.length) {
+        var oldValue = nodeInfo.variable[nodeInfo.key];
+        pathArrayString = pathArrayString || (_isArray(nodeInfo.targetPath) ? nodeInfo.targetPath.join(PATH_SEPARATOR) : '');
+        if (_isArray(nodeInfo.variable)) {
+          nodeInfo.variable.splice(nodeInfo.key, 1);
         } else {
-          delete arg.variable[arg.key];
+          delete nodeInfo.variable[nodeInfo.key];
         }
         callback({
           eventType: 'delete',
-          variable: arg.variable,
-          key: arg.key,
-          path: arg.path,
-          pathString: arg.path.join(PATH_SEPARATOR),
-          targetPath: arg.targetPath,
+          variable: nodeInfo.variable,
+          key: nodeInfo.key,
+          path: nodeInfo.path,
+          pathString: nodeInfo.path.join(PATH_SEPARATOR),
+          targetPath: nodeInfo.targetPath,
           targetPathString: pathArrayString,
           oldValue: oldValue,
         });
@@ -223,12 +223,12 @@
   function $nodeMap(rootVariable, pathArray, checker) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
-    checker = checker || DEFAULT_EXIST_CHECKER;
+    if (!_isFunction(checker)) checker = DEFAULT_EXIST_CHECKER;
     pathArray = [].concat(pathArray);
     var pathArrayString = pathArray.join(PATH_SEPARATOR);
     var parentVariable;
     var rootChildren = rootVariable;
-
+    var isExist = false;
     for (var i = 0; i < pathArray.length; i += 1) {
       var pathIndex = i;
       var currentKey = pathArray[pathIndex];
@@ -242,17 +242,19 @@
         targetPath: pathArray,
         targetPathString: pathArrayString,
       })) {
+        isExist = true;
         parentVariable = rootChildren;
         rootChildren = rootChildren[currentKey];
       } else {
+        isExist = false;
         return {
-          isExist: false,
+          isExist: isExist,
           variable: rootChildren,
         };
       }
     }
     return {
-      isExist: true,
+      isExist: isExist,
       value: rootChildren,
       variable: parentVariable,
     };
@@ -260,7 +262,7 @@
 
   function $nodeBackMap(rootVariable, pathArray, checker, $i) {
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
-    checker = checker || DEFAULT_EXIST_CHECKER;
+    if (!_isFunction(checker)) checker = DEFAULT_EXIST_CHECKER;
     if ('number' !== typeof $i) $i = pathArray.length - 1;
     if ($i < 0) return;
     pathArray = [].concat(pathArray);
@@ -342,29 +344,21 @@
     return (regExp + '').replace(regExpForEscape, '\\$&');
   }
 
-  function _parseMatchPath (matchPath) {
+  function _parseMatchPath (matchPath, ROOT_PATH) {
     var isMatchPathArray = false;
     var isMatchPathRegExp = false;
     if (_isArray(matchPath)) {
       isMatchPathArray = true;
-      if (matchPath[0] !== PATH_ROOT) {
-        matchPath = [].concat(PATH_ROOT, matchPath);
-      } else {
-        matchPath = [].concat(matchPath);
-      }
+      matchPath = _parsePathArgument(matchPath, ROOT_PATH);
+      // matchPath = [].concat(matchPath);
     } else if (matchPath instanceof RegExp) {
-      var regExpSource = matchPath.source;
-      if (regExpSource.indexOf('^') === -1) regExpSource = regExpSource.substr(1);
-      var rootPath = _escapeRegExp(PATH_ROOT + PATH_SEPARATOR);
-      matchPath = new RegExp('^' + rootPath + regExpSource, matchPath.flags);
       isMatchPathRegExp = true;
     } else { // string
       isMatchPathArray = false;
       isMatchPathRegExp = false;
       matchPath += ''; // toString
-      if (matchPath.indexOf(PATH_ROOT) !== 0) {
-        matchPath = PATH_ROOT + PATH_SEPARATOR + matchPath;
-      }
+      var rootAndSeparator = (ROOT_PATH + PATH_SEPARATOR);
+      if (matchPath.indexOf(rootAndSeparator) !== 0) matchPath = (rootAndSeparator + matchPath);
       if (matchPath.indexOf('+') > -1 || matchPath.indexOf('#') > -1) {
         isMatchPathRegExp = true;
         matchPath = _escapeRegExp(matchPath);
@@ -431,15 +425,20 @@
     }
   }
 
-  var PATH_ROOT = 'root';
-  function createVarbox(defaultVariable) {
+  function _parsePathArgument(pathArg, ROOT_PATH) {
+    if (typeof pathArg === 'string') pathArg = pathArg.split(PATH_SEPARATOR);
+    if (!_isArray(pathArg)) pathArg = [];
+    pathArg = [].concat(pathArg);
+    if (pathArg[0] !== ROOT_PATH) pathArg.unshift(ROOT_PATH);
+    return pathArg;
+  }
+
+  function createVarbox(opts) {
+    var ROOT_PATH = '';
     var rootVariable = {};
-    
-    if (arguments.length > 0) {
-      rootVariable[PATH_ROOT] = defaultVariable;
-    } else {
-      rootVariable[PATH_ROOT] = {};
-    }
+    if (!_isObject(opts)) opts = {};
+    if (_has(opts, 'ROOT_PATH')) ROOT_PATH = ('' + opts['ROOT_PATH']);
+
     var watcherIdCounter = 0;
     var watchers = {};
     function _onEvent(event) {
@@ -465,20 +464,17 @@
     }
     function set_(pathArray, val) {
       if (arguments.length < 2) throw new Error('Need two arguments!');
-      if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
-      if (!_isArray(pathArray)) pathArray = [];
-      return $set(rootVariable, [].concat(PATH_ROOT, pathArray), val, _onEventForSet);
+      pathArray = _parsePathArgument(pathArray, ROOT_PATH);
+      return $set(rootVariable, pathArray, val, _onEventForSet);
     }
     function get_(pathArray) {
-      if (arguments.length === 0) return rootVariable[PATH_ROOT];
-      if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
-      if (!_isArray(pathArray)) pathArray = [];
-      return $get(rootVariable, [].concat(PATH_ROOT, pathArray));
+      if (arguments.length === 0) return rootVariable[ROOT_PATH];
+      pathArray = _parsePathArgument(pathArray, ROOT_PATH);
+      return $get(rootVariable, pathArray);
     }
     function delete_(pathArray) {
-      if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
-      if (!_isArray(pathArray)) pathArray = [];
-      return $delete(rootVariable, [].concat(PATH_ROOT, pathArray), _onEventForDelete);
+      pathArray = _parsePathArgument(pathArray, ROOT_PATH);
+      return $delete(rootVariable, pathArray, _onEventForDelete);
     }
     function _unwatchGenerator(watcherId) {
       return function unwatch() {
@@ -493,7 +489,7 @@
     function watchPath_ (matchPath, watcher, matchType) {
       if (!_isFunction(watcher)) throw new Error('Watcher should be a function');
       if (_isNone(matchPath)) return watch_(watcher);
-      var matchParseResult = _parseMatchPath(matchPath);
+      var matchParseResult = _parseMatchPath(matchPath, ROOT_PATH);
       if (matchType === MATCHING_TYPE_VARIABLE) {
         return watch_(function watcherOnWatch (event) {
           if(_checkIfMatchedForWatchVariable(event, matchParseResult)) watcher(event);
@@ -508,34 +504,30 @@
       return watchPath_(matchPath, watcher, MATCHING_TYPE_VARIABLE);
     }
     function has_(pathArray) {
-      if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
-      if (!_isArray(pathArray)) pathArray = [];
-      return $has(rootVariable, [].concat(PATH_ROOT, pathArray));
+      pathArray = _parsePathArgument(pathArray, ROOT_PATH);
+      return $has(rootVariable, pathArray);
     }
     function destory_(pathArray) {
-      if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
-      if (!_isArray(pathArray)) pathArray = [];
-      pathArray = [].concat(PATH_ROOT, pathArray);
+      pathArray = _parsePathArgument(pathArray, ROOT_PATH);
       var v = $nodeMap(rootVariable, pathArray);
       if (v.isExist) {
         $destory(v.value, _onEventForDestory, pathArray);
       }
     }
     function nodeMap_(pathArray, checker) {
+      pathArray = _parsePathArgument(pathArray, ROOT_PATH);
       return $nodeMap(rootVariable, pathArray, checker);
     }
     function nodeBackMap_(pathArray, checker) {
+      pathArray = _parsePathArgument(pathArray, ROOT_PATH);
       return $nodeBackMap(rootVariable, pathArray, checker);
     }
     function merge_(pathArray, val) {
-      if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
-      if (!_isArray(pathArray)) pathArray = [];
-      return $merge(rootVariable, [].concat(PATH_ROOT, pathArray), val, _onEventForMerge);
+      pathArray = _parsePathArgument(pathArray, ROOT_PATH);
+      return $merge(rootVariable, pathArray, val, _onEventForMerge);
     }
     function everyNode_(pathArray, callback) {
-      if (typeof pathArray === 'string') pathArray = pathArray.split(PATH_SEPARATOR);
-      if (!_isArray(pathArray)) pathArray = [];
-      pathArray = [].concat(PATH_ROOT, pathArray);
+      pathArray = _parsePathArgument(pathArray, ROOT_PATH);
       var v = $nodeMap(rootVariable, pathArray);
       if (v.isExist) {
         // $destory(v.value, _onEvent, pathArray);

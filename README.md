@@ -11,7 +11,7 @@ $ npm install varbox
 
 ----------
 
-### Varbox.<strong>createVarbox()</strong>
+### Varbox.<strong>create()</strong>
 
 Create a variable box
 

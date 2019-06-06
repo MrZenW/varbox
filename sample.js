@@ -1,7 +1,7 @@
 var Varbox = require('./index');
 
 var box = Varbox.create({
-  ROOT_PATH: '',
+  // ROOT_PATH: '',
 });
 
 box.set('key/user/name', 'Varbox');
@@ -11,26 +11,26 @@ console.log('#set "key/usr/name" to "Varbox": %o', box.get());
 //   console.log('#event: %o', event);
 // })
 
-var unwatchVariableFunction = box.watchVariable('/key/user/name2', (event) => {
+var unwatchVariableFunction = box.watchVariable('key/user/name2', (event) => {
   console.log('#event from watchVariable: %o', event);
 })
-var unwatchPathFunction = box.watchPath('/key/user/name2', (event) => {
+var unwatchPathFunction = box.watchPath('key/user/name2', (event) => {
   console.log('#event from watchPath: %o', event);
 })
 
-box.merge('/key/user/name2', 'Varbox2');
+box.merge('key/user/name2', 'Varbox2');
 console.log('#merge "key/user/name2" to Varbox2: %o', box.get());
 
-box.merge('/key/user/name2/last', 'last name');
+box.merge('key/user/name2/last', 'last name');
 console.log('#merge "key/user/name2/last" to Varbox2: %o', box.get());
 
-box.destory('/key/user');
-console.log('#destory "key/user": %o', box.get());
+box.destory('key/user');
+// console.log('#destory "key/user": %o', box.get());
 
 box.destory();
 console.log('#destory whole varbox: %o', box.get());
 
-box.delete('/key', 'Varbox2');
+box.delete('key', 'Varbox2');
 console.log('#delete "key"', box.get());
 
 box.set(null, '123');

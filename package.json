@@ -1,6 +1,6 @@
 {
   "name": "varbox",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "An observable variable box",
   "main": "varbox.js",
   "scripts": {

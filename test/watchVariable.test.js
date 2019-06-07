@@ -12,3 +12,4 @@ var unwatchPathFunction = box.watchPath('country/state/DC', (event) => {
 box.set('country/state', 'new state');
 box.set('country/state/DC', { population: 100 });
 box.set('country/state/DC/population', 200);
+box.merge('country/state/DC', { name: 123 });

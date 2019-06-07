@@ -95,7 +95,7 @@
       }
     }
   }
-  function $set(rootVariable, pathArray, newValue, callback, isMerge) {
+  function $set(rootVariable, pathArray, sourceValue, callback, isMerge) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
     if (!_isFunction(callback)) callback = BLANK_FUNCTION;
@@ -111,10 +111,10 @@
               (isArrayType = _isArray(oldValue))
             )) {
           var cloningBase = isArrayType ? [] : {};
-          nodeInfo.variable[nodeInfo.key] = _merge(cloningBase, oldValue, newValue);
+          nodeInfo.variable[nodeInfo.key] = _merge(cloningBase, oldValue, sourceValue);
           eventType = 'merge';
         } else {
-          nodeInfo.variable[nodeInfo.key] = newValue;
+          nodeInfo.variable[nodeInfo.key] = sourceValue;
           eventType = 'set';
         }
         callback({
@@ -123,6 +123,7 @@
           key: nodeInfo.key,
           path: nodeInfo.path,
           targetPath: nodeInfo.targetPath,
+          sourceValue: sourceValue,
           oldValue: oldValue,
           newValue: nodeInfo.variable[nodeInfo.key],
         });
@@ -140,6 +141,7 @@
           key: nodeInfo.key,
           path: nodeInfo.path,
           targetPath: nodeInfo.targetPath,
+          sourceValue: sourceValue,
           oldValue: oldValue,
           newValue: nodeInfo.variable[nodeInfo.key],
         });
@@ -148,8 +150,8 @@
       return;
     });
   }
-  function $merge(rootVariable, pathArray, newValue, callback) {
-    return $set(rootVariable, pathArray, newValue, callback, true);
+  function $merge(rootVariable, pathArray, sourceValue, callback) {
+    return $set(rootVariable, pathArray, sourceValue, callback, true);
   }
   function $deepMerge(varA, varB, path) {
     for (var key in varB) {

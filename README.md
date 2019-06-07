@@ -140,6 +140,7 @@ The watcher function has an argument which used to describe what change happened
   pathString: 'varbox/name2',
   targetPath: [ 'varbox', 'name2' ],
   targetPathString: 'varbox/name2',
+  sourceValue: 'Varbox2', // It will be the input argument, in the set add merge cases
   oldValue: undefined,
   newValue: 'Varbox2',
   method: 'merge' 
@@ -190,6 +191,7 @@ The watcher function has an argument which used to describe what change happened
   pathString: 'varbox/name2',
   targetPath: [ 'varbox', 'name2' ],
   targetPathString: 'varbox/name2',
+  sourceValue: 'Varbox2', // It will be the input argument, in the set add merge cases
   oldValue: undefined,
   newValue: 'Varbox2',
   method: 'merge' 
@@ -240,6 +242,7 @@ The watcher function has an argument which used to describe what change happened
   pathString: 'varbox/name2',
   targetPath: [ 'varbox', 'name2' ],
   targetPathString: 'varbox/name2',
+  sourceValue: 'Varbox2', // It will be the input argument, in the set add merge cases
   oldValue: undefined,
   newValue: 'Varbox2',
   method: 'merge' 

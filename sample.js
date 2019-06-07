@@ -1,4 +1,4 @@
-var Varbox = require('./index');
+var Varbox = require('./varbox');
 
 var box = Varbox.createBox({
   ROOT_PATH: ['ROOT'],

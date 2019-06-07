@@ -1,8 +1,8 @@
 {
   "name": "varbox",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "An observable variable box",
-  "main": "index.js",
+  "main": "varbox.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

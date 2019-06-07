@@ -411,7 +411,7 @@
 
   var boxes = {};
   var boxNameCounter = 0;
-  function createVarbox(opts) {
+  function createBox(opts) {
     boxNameCounter += 1;
     var BOX_NAME = 'COUNT__' + boxNameCounter;
     var PATH_SEPARATOR = '/';
@@ -556,7 +556,11 @@
     };
     return boxes[BOX_NAME];
   }
-  var Varbox = { create: createVarbox, boxes: boxes };
+  function getBox (boxName) {
+    if (arguments.length === 0) return _merge({}, boxes);
+    return boxes[boxName];
+  }
+  var Varbox = { createBox: createBox, getBox: getBox };
   if (typeof module === 'object') module.exports = Varbox;
   if (typeof window === 'object') window.Varbox = Varbox;
 })();

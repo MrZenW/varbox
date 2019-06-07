@@ -1,15 +1,13 @@
 var Varbox = require('./index');
 
-var box = Varbox.create({
-  // ROOT_PATH: '',
+var box = Varbox.createBox({
+  ROOT_PATH: ['ROOT'],
+  PATH_SEPARATOR: '/',
+  BOX_NAME: 'custom_box_name',
 });
 
 box.set('key/user/name', 'Varbox');
 console.log('#set "key/usr/name" to "Varbox": %o', box.get());
-
-// var unwatchFunction = box.watch((event) => {
-//   console.log('#event: %o', event);
-// })
 
 var unwatchVariableFunction = box.watchVariable('key/user/name2', (event) => {
   console.log('#event from watchVariable: %o', event);

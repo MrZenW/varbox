@@ -11,12 +11,30 @@ $ npm install varbox
 
 ----------
 
-### Varbox.<strong>create()</strong>
+### Varbox.<strong>createBox([opt])</strong>
 
 Create a variable box
 
 ```JavaScript
-var box = Varbox.create();
+var box = Varbox.createBox();
+// or
+var box = Varbox.createBox({
+  ROOT_PATH: ['ROOT'],
+  PATH_SEPARATOR: '/',
+  BOX_NAME: 'custom_box_name',
+});
+```
+
+----------
+
+### Varbox.<strong>getBox([boxName])</strong>
+
+return a varbox by the argument `boxName`, it will return all of the boxes if there is no argument given.
+
+```JavaScript
+var box = Varbox.getBox('boxName');
+// or
+var box = Varbox.getBox();
 ```
 
 ----------
@@ -26,9 +44,9 @@ var box = Varbox.create();
 Get a value from the path of the box
 
 ```JavaScript
-box.get('/classrooms/A/students/Ruofei/age');
+box.get('classrooms/A/students/Ruofei/age');
 // or
-box.get(['', 'classrooms', 'A','students', 'Ruofei', 'age']);
+box.get(['classrooms', 'A','students', 'Ruofei', 'age']);
 ```
 
 The path argument could be an `Array` or `String`, any other type of argument will override to an empty array `[]` .
@@ -40,9 +58,9 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 Set a value to the path of the box
 
 ```JavaScript
-box.set('/classrooms/A/students/Ruofei/age', 4);
+box.set('classrooms/A/students/Ruofei/age', 4);
 // or
-box.set(['', 'classrooms', 'A','students', 'Ruofei', 'age'], 4);
+box.set(['classrooms', 'A','students', 'Ruofei', 'age'], 4);
 ```
 
 The path argument could be an `Array` or `String`, any other type of argument will override to an empty array `[]` .
@@ -54,9 +72,9 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 Set `a new variable` to the path of the box.
 
 ```JavaScript
-box.merge('/classrooms/A/students/Ruofei', { isAbsent: false });
+box.merge('classrooms/A/students/Ruofei', { isAbsent: false });
 // or
-box.merge(['', 'classrooms', 'A','students', 'Ruofei'], { isAbsent: false });
+box.merge(['classrooms', 'A','students', 'Ruofei'], { isAbsent: false });
 ```
 
 The new variable is merged from the original value and the value argument.
@@ -70,9 +88,9 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 Return `true` or `false` to describe if the path exists.
 
 ```JavaScript
-box.has('/classrooms/A/students/Ruofei');
+box.has('classrooms/A/students/Ruofei');
 // or
-box.has(['', 'classrooms', 'A','students', 'Ruofei']);
+box.has(['classrooms', 'A','students', 'Ruofei']);
 ```
 
 ----------
@@ -82,9 +100,9 @@ box.has(['', 'classrooms', 'A','students', 'Ruofei']);
 Delete a variable which on the path.
 
 ```JavaScript
-box.delete('/classrooms/A/students/Ruofei');
+box.delete('classrooms/A/students/Ruofei');
 // or
-box.delete(['', 'classrooms', 'A','students', 'Ruofei']);
+box.delete(['classrooms', 'A','students', 'Ruofei']);
 ```
 
 ----------
@@ -94,9 +112,9 @@ box.delete(['', 'classrooms', 'A','students', 'Ruofei']);
 Delete all of the properties of all of the variables on and under the path argument.
 
 ```JavaScript
-box.destory('/classrooms/A/students');
+box.destory('classrooms/A/students');
 // or
-box.destory(['', 'classrooms', 'A','students']);
+box.destory(['classrooms', 'A','students']);
 ```
 
 ----------
@@ -118,10 +136,10 @@ The watcher function has an argument which used to describe what change happened
   eventType: 'set', // set, add, merge, delete, destory
   variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
-  path: [ '', 'varbox', 'name2' ],
-  pathString: '/varbox/name2',
-  targetPath: [ '', 'varbox', 'name2' ],
-  targetPathString: '/varbox/name2',
+  path: [ 'varbox', 'name2' ],
+  pathString: 'varbox/name2',
+  targetPath: [ 'varbox', 'name2' ],
+  targetPathString: 'varbox/name2',
   oldValue: undefined,
   newValue: 'Varbox2',
   method: 'merge' 
@@ -135,20 +153,20 @@ The watcher function has an argument which used to describe what change happened
 Watching all of the paths which ***UNDER*** the path argument of the box.
 
 ```JavaScript
-box.watchPath('/classrooms/A/students', function watcher(event) {
+box.watchPath('classrooms/A/students', function watcher(event) {
   console.log(event);
 });
 // or
-box.watchPath(['', 'classrooms', 'A', 'students'], function watcher(event) {
+box.watchPath(['classrooms', 'A', 'students'], function watcher(event) {
   console.log(event);
 });
 // or
-box.watchPath('/classrooms/+/students', function watcher(event) {
+box.watchPath('classrooms/+/students', function watcher(event) {
   // + will match noly one node in the path.
   console.log(event);
 });
 // or
-box.watchPath('/classrooms/#/students', function watcher(event) {
+box.watchPath('classrooms/#/students', function watcher(event) {
   // # will match at least one node in the path.
   console.log(event);
 });
@@ -168,10 +186,10 @@ The watcher function has an argument which used to describe what change happened
   eventType: 'set', // set, add, merge, delete, destory
   variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
-  path: [ '', 'varbox', 'name2' ],
-  pathString: '/varbox/name2',
-  targetPath: [ '', 'varbox', 'name2' ],
-  targetPathString: '/varbox/name2',
+  path: [ 'varbox', 'name2' ],
+  pathString: 'varbox/name2',
+  targetPath: [ 'varbox', 'name2' ],
+  targetPathString: 'varbox/name2',
   oldValue: undefined,
   newValue: 'Varbox2',
   method: 'merge' 
@@ -185,20 +203,20 @@ The watcher function has an argument which used to describe what change happened
 Watching all of the paths which ***ABOVE*** the path argument of the box.
 
 ```JavaScript
-box.watchPath('/classrooms/A/students', function watcher(event) {
+box.watchPath('classrooms/A/students', function watcher(event) {
   console.log(event);
 });
 // or
-box.watchPath(['', 'classrooms', 'A', 'students'], function watcher(event) {
+box.watchPath(['classrooms', 'A', 'students'], function watcher(event) {
   console.log(event);
 });
 // or
-box.watchPath('/classrooms/+/students', function watcher(event) {
+box.watchPath('classrooms/+/students', function watcher(event) {
   // + will match noly one node in the path.
   console.log(event);
 });
 // or
-box.watchPath('/classrooms/#/students', function watcher(event) {
+box.watchPath('classrooms/#/students', function watcher(event) {
   // # will match at least one node in the path.
   console.log(event);
 });
@@ -218,10 +236,10 @@ The watcher function has an argument which used to describe what change happened
   eventType: 'set', // set, add, merge, delete, destory
   variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
-  path: [ '', 'varbox', 'name2' ],
-  pathString: '/varbox/name2',
-  targetPath: [ '', 'varbox', 'name2' ],
-  targetPathString: '/varbox/name2',
+  path: [ 'varbox', 'name2' ],
+  pathString: 'varbox/name2',
+  targetPath: [ 'varbox', 'name2' ],
+  targetPathString: 'varbox/name2',
   oldValue: undefined,
   newValue: 'Varbox2',
   method: 'merge' 
@@ -235,7 +253,7 @@ The watcher function has an argument which used to describe what change happened
 Enumerate all of the nodes in the path from left to right which in the argument path.
 
 ```JavaScript
-box.nodeMap('/classrooms/A/students', function checker(variable) {
+box.nodeMap('classrooms/A/students', function checker(variable) {
 
 });
 ```
@@ -271,7 +289,7 @@ Return:
 Enumerate all of the nodes in the path from right to left which in the argument path.
 
 ```JavaScript
-box.nodeBackMap('/classrooms/A/students', function checker(variable) {
+box.nodeBackMap('classrooms/A/students', function checker(variable) {
 
 });
 ```
@@ -301,7 +319,7 @@ Map all of the nodes which under the path argument of the box.
 The path argument could be an `Array` or `String`, any other type of argument will override to an empty array `[]` .
 
 ```JavaScript
-box.everyNode('/classrooms/A/students', function callback(variable) {
+box.everyNode('classrooms/A/students', function callback(variable) {
 
 })
 ```

@@ -100,22 +100,26 @@
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
     if (!_isFunction(callback)) callback = BLANK_FUNCTION;
     return $nodeMap(rootVariable, pathArray, function _nodeMapSet(nodeInfo) {
+      var oldValue = nodeInfo.variable[nodeInfo.key];
+      var isObjectType = _isObject(oldValue);
+      var isHaveTheKey = _has(nodeInfo.variable, nodeInfo.key);
+      var isArrayType;
+      var eventType;
       if (nodeInfo.path.length === nodeInfo.targetPath.length) {
-        var eventType;
-        var oldValue = nodeInfo.variable[nodeInfo.key];
-        var isObjectType;
-        var isArrayType;
-        if (isMerge && _has(nodeInfo.variable, nodeInfo.key) &&
+        if (isMerge && isHaveTheKey &&
             (
-              (isObjectType = _isObject(oldValue)) ||
-              (isArrayType = _isArray(oldValue))
+              isObjectType || (isArrayType = _isArray(oldValue))
             )) {
           var cloningBase = isArrayType ? [] : {};
           nodeInfo.variable[nodeInfo.key] = _merge(cloningBase, oldValue, sourceValue);
           eventType = 'merge';
         } else {
+          if (isHaveTheKey) {
+            eventType = 'replace';
+          } else {
+            eventType = 'add';
+          }
           nodeInfo.variable[nodeInfo.key] = sourceValue;
-          eventType = 'set';
         }
         callback({
           eventType: eventType,
@@ -129,14 +133,18 @@
         });
         return;
       }
-      var isHaveTheKey = _has(nodeInfo.variable, nodeInfo.key);
-      if (!isHaveTheKey || !_isObject(nodeInfo.variable[nodeInfo.key])) {
+      if (!isHaveTheKey || !isObjectType) {
         // a node but not exists, include null undefined NaN
-        var oldValue = undefined;
+        if (!isHaveTheKey) {
+          eventType = 'add';
+        } else if (!isObjectType) {
+          eventType = 'replace';
+        }
+        oldValue = undefined;
         if (isHaveTheKey) oldValue = nodeInfo.variable[nodeInfo.key];
         nodeInfo.variable[nodeInfo.key] = {};
         callback({
-          eventType: 'add',
+          eventType: eventType,
           variable: nodeInfo.variable,
           key: nodeInfo.key,
           path: nodeInfo.path,

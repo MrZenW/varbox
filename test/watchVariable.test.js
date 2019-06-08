@@ -1,10 +1,11 @@
+/* eslint-disable no-console */
 var Varbox = require('../varbox');
 
 var box = Varbox.createBox();
 
-var unwatchVariableFunction = box.watchVariable('country/state/DC', (event) => {
+var unwatchVariableFunction = box.watchVariable('country/state/DC', function (event) {
   console.log('#event from watchVariable: %o',event.path, event.eventType, box.get('country/state/DC'));
-})
+});
 // var unwatchPathFunction = box.watchPath('country/state/DC', (event) => {
 //   console.log('#event from watchPath: %o', event);
 // })
@@ -16,3 +17,6 @@ box.merge('country/state/DC', { name: 123 });
 console.log(box.get('country/state/DC'));
 box.merge('country/state/DC', { sex: 321 });
 console.log(box.get('country/state/DC'));
+
+unwatchVariableFunction();
+box.set('country/state', 'the last variable');

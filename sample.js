@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 var Varbox = require('./varbox');
 
 var box = Varbox.createBox({
@@ -9,12 +10,12 @@ var box = Varbox.createBox({
 box.set('key/user/name', 'Varbox');
 console.log('#set "key/usr/name" to "Varbox": %o', box.get());
 
-var unwatchVariableFunction = box.watchVariable('key/user/name2', (event) => {
+var unwatchVariableFunction = box.watchVariable('key/user/name2', function (event) {
   console.log('#event from watchVariable: %o', event);
-})
-var unwatchPathFunction = box.watchPath('key/user/name2', (event) => {
+});
+var unwatchPathFunction = box.watchPath('key/user/name2', function (event) {
   console.log('#event from watchPath: %o', event);
-})
+});
 
 box.merge('key/user/name2', 'Varbox2');
 console.log('#merge "key/user/name2" to Varbox2: %o', box.get());
@@ -40,7 +41,7 @@ console.log('#unwatched');
 
 box.set('0', 'number 0');
 console.log('#set "0" to "number 0": %o', box.get());
-console.log('There won\'t be no more event appear there, because the varbox has been unwatched.')
+console.log('There won\'t be no more event appear there, because the varbox has been unwatched.');
 
 
 

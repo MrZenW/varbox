@@ -1,7 +1,8 @@
+// eslint-disable-next-line no-extra-semi
 ;
-"use strict";
+'use strict';
 (function VarBoxModuleSpace(undefined) {
-  var MATCHING_TYPE_PATH = 'MATCHING_TYPE_PATH';
+  // var MATCHING_TYPE_PATH = 'MATCHING_TYPE_PATH';
   var MATCHING_TYPE_VARIABLE = 'MATCHING_TYPE_VARIABLE';
   var ARRAY_TYPE_STRINGIFY = Object.prototype.toString.call([]);
   var _isArray = Array.isArray || function _isArray_(variable) {
@@ -39,22 +40,23 @@
     if (_isNone(target)) throw new TypeError('Cannot convert undefined or null to object');
     var to = Object(target);
     var isTargetArray = _isArray(target);
+    var _nextSource;
     if (isTargetArray) {
-      for (var i = 1; i < arguments.length; i += 1) {
-        var nextSource = arguments[i];
-        if (_isArray(nextSource)) {
-          to.push.apply(to, nextSource);
+      for (var iArray = 1; iArray < arguments.length; iArray += 1) {
+        _nextSource = arguments[iArray];
+        if (_isArray(_nextSource)) {
+          to.push.apply(to, _nextSource);
         } else {
-          to.push.call(to, nextSource);
+          to.push.call(to, _nextSource);
         }
       }
     } else {
-      for (var i = 1; i < arguments.length; i += 1) {
-        var nextSource = Object(arguments[i]);
-        if (nextSource) {
-          for (var nextKey in nextSource) {
-            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
-              to[nextKey] = nextSource[nextKey];
+      for (var iObject = 1; iObject < arguments.length; iObject += 1) {
+        _nextSource = Object(arguments[iObject]);
+        if (_nextSource) {
+          for (var nextKey in _nextSource) {
+            if (Object.prototype.hasOwnProperty.call(_nextSource, nextKey)) {
+              to[nextKey] = _nextSource[nextKey];
             }
           }
         }
@@ -67,29 +69,29 @@
     if (_isObject(variable)) {
       $path = $path || [];
       if (_isArray(variable)) {
-        var key = -1;
+        var index = -1;
         while(variable.length) {
-          key += 1;
-          var p = [].concat($path, key);
-          $destory(variable.shift(), callback, p);
+          index += 1;
+          var arrayPath = [].concat($path, index);
+          $destory(variable.shift(), callback, arrayPath);
           callback({
             eventType: 'destory',
             variable: variable,
-            key: key,
-            path: p,
+            key: index,
+            path: arrayPath,
           });
         }
       } else {
         for (var key in variable) {
           var v = variable[key];
           delete variable[key];
-          var p = [].concat($path, key);
-          $destory(v, callback, p);
+          var objectPath = [].concat($path, key);
+          $destory(v, callback, objectPath);
           callback({
             eventType: 'destory',
             variable: variable,
             key: key,
-            path: p,
+            path: objectPath,
           });
         }
       }
@@ -161,6 +163,7 @@
   function $merge(rootVariable, pathArray, sourceValue, callback) {
     return $set(rootVariable, pathArray, sourceValue, callback, true);
   }
+  // eslint-disable-next-line no-unused-vars
   function $deepMerge(varA, varB, path) {
     for (var key in varB) {
       var aNextV = varA[key];
@@ -267,7 +270,7 @@
       value: Object(rootVariable)[currentKey],
       path: currentPath,
       targetPath: pathArray,
-    })
+    });
   }
 
   var _everyNodeDuplicateCache = {};
@@ -281,25 +284,24 @@
     }
     _everyNodeDuplicateCache[contextKey] = _everyNodeDuplicateCache[contextKey] || [];
     var currentCache = _everyNodeDuplicateCache[contextKey];
+    function _do(key) {
+      var v = variable[key];
+      if (!_isObject(v) || currentCache.indexOf(v) === -1) {
+        // don't cache non-object variable
+        currentCache.push(v);
+        var p = [].concat(itsPath, key);
+        callback({
+          variable: variable,
+          key: key,
+          value: v,
+          path: p,
+        });
+        $everyNode(v, callback, key, p, contextKey);
+      }
+    }
+
     if (_isObject(variable)) {
       itsPath = itsPath || [];
-
-      function _do(key) {
-        var v = variable[key];
-        if (!_isObject(v) || currentCache.indexOf(v) === -1) {
-          // don't cache non-object variable
-          currentCache.push(v);
-          var p = [].concat(itsPath, key);
-          callback({
-            variable: variable,
-            key: key,
-            value: v,
-            path: p,
-          });
-          $everyNode(v, callback, key, p, contextKey);
-        }
-      }
-
       if (_isArray(variable)) {
         for (var i = 0; i < variable.length; i += 1) {
           _do(i);
@@ -313,7 +315,7 @@
         currentCache.splice(0);
         delete _everyNodeDuplicateCache[contextKey];
       }
-    } else if (isTopLevel){
+    } else if (isTopLevel) {
       callback({
         variable: undefined,
         key: itsKey,
@@ -522,7 +524,7 @@
     }
     function destory_(pathArray) {
       pathArray = _parsePathArgument(pathArray, PATH_SEPARATOR);
-      pathArray = [].concat(ROOT_PATH, pathArray)
+      pathArray = [].concat(ROOT_PATH, pathArray);
       var v = $nodeMap(rootVariable, pathArray);
       if (v.isExist) {
         $destory(v.value, _onEventForDestory, pathArray);

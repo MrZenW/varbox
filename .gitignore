@@ -132,6 +132,7 @@ typings/
 .dynamodb/
 
 ### VisualStudioCode ###
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

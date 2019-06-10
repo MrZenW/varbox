@@ -9,8 +9,8 @@
     "prepush": "npm run lint",
     "lint": "eslint . --cache",
     "commit": "git-cz",
-    "github-push": "git push",
-    "npm-publish": "npm publish"
+    "push:github": "git push",
+    "publish:npm": "npm publish"
   },
   "repository": {
     "type": "git",

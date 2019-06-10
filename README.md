@@ -39,6 +39,28 @@ var box = Varbox.getBox();
 
 ----------
 
+### Varbox.box#<strong>update(path, valueSource)</strong>
+
+Through a valueSource function to set a value to the path of the box
+
+```JavaScript
+box.set(['classrooms', 'A','students', 'Ruofei', 'age'], function valueSource(oldValue) {
+  return 4
+});
+/* If you want to set a function as the value you should do the following. */
+box.set(['classrooms', 'A','students', 'Ruofei', 'ageComputeFunction'], function valueSource(oldValue) {
+  /* a function which is the value instead of the valueSource */
+  return function notValueSource() {
+    // your codes
+    return 3 + 1;
+  };
+});
+```
+
+The path argument could be an `Array` or `String`, any other type of argument will override to an empty array `[]` .
+
+----------
+
 ### Varbox.box#<strong>get(path)</strong>
 
 Get a value from the path of the box
@@ -53,7 +75,7 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 
 ----------
 
-### Varbox.box#<strong>set(path, value)</strong>
+### Varbox.box#<strong>set(path, valueSource)</strong>
 
 Set a value to the path of the box
 
@@ -69,7 +91,7 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 
 ### Varbox.box#<strong>merge(path, value)</strong>
 
-Set `a new variable` to the path of the box.
+Merge a variable into the current variable;
 
 ```JavaScript
 box.merge('classrooms/A/students/Ruofei', { isAbsent: false });
@@ -77,7 +99,7 @@ box.merge('classrooms/A/students/Ruofei', { isAbsent: false });
 box.merge(['classrooms', 'A','students', 'Ruofei'], { isAbsent: false });
 ```
 
-The new variable is merged from the original value and the value argument.
+The path will keep the old variable reference rather than a new variable;
 
 The path argument could be an `Array` or `String`, any other type of argument will override to an empty array `[]` .
 

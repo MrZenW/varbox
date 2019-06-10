@@ -35,6 +35,15 @@ console.log('#delete "key"', box.get());
 box.set(null, '123');
 console.log('#set the varbox to "123": %o', box.get());
 
+box.update('key', function(oldValue) {
+  console.log('#update oldValue', oldValue);
+  return 1;
+});
+box.update('key', function(oldValue) {
+  console.log('#update oldValue', oldValue);
+  return 1;
+});
+
 unwatchVariableFunction();
 unwatchPathFunction();
 console.log('#unwatched');

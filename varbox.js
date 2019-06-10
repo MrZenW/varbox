@@ -97,44 +97,43 @@
       }
     }
   }
-  function $set(rootVariable, pathArray, sourceValue, callback, isMerge) {
+  function $set(rootVariable, pathArray, value, callback) {
+    function setSourceValueWrapping () { return value; }
+    function updateCallback (event) {
+      event.sourceValue = value;
+      callback(event);
+    }
+    return $update(rootVariable, pathArray, setSourceValueWrapping, updateCallback);
+  }
+  function $update(rootVariable, pathArray, valueSource, callback) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
+    if (!_isFunction(valueSource)) throw new TypeError('Need a function for value source');
     if (!_isFunction(callback)) callback = BLANK_FUNCTION;
     return $nodeMap(rootVariable, pathArray, function _nodeMapSet(nodeInfo) {
       var oldValue = nodeInfo.variable[nodeInfo.key];
-      var isObjectType = _isObject(oldValue);
       var isHaveTheKey = _has(nodeInfo.variable, nodeInfo.key);
-      var isArrayType;
       var eventType;
       if (nodeInfo.path.length === nodeInfo.targetPath.length) {
-        if (isMerge && isHaveTheKey &&
-            (
-              isObjectType || (isArrayType = _isArray(oldValue))
-            )) {
-          var cloningBase = isArrayType ? [] : {};
-          nodeInfo.variable[nodeInfo.key] = _merge(cloningBase, oldValue, sourceValue);
-          eventType = 'merge';
+        if (isHaveTheKey) {
+          eventType = 'replace';
         } else {
-          if (isHaveTheKey) {
-            eventType = 'replace';
-          } else {
-            eventType = 'add';
-          }
-          nodeInfo.variable[nodeInfo.key] = sourceValue;
+          eventType = 'add';
         }
+        nodeInfo.variable[nodeInfo.key] = valueSource(oldValue);
         callback({
           eventType: eventType,
           variable: nodeInfo.variable,
           key: nodeInfo.key,
           path: nodeInfo.path,
           targetPath: nodeInfo.targetPath,
-          sourceValue: sourceValue,
+          // sourceValue: valueSource,
           oldValue: oldValue,
           newValue: nodeInfo.variable[nodeInfo.key],
         });
         return;
       }
+      var isObjectType = _isObject(oldValue);
       if (!isHaveTheKey || !isObjectType) {
         // a node but not exists, include null undefined NaN
         if (!isHaveTheKey) {
@@ -151,7 +150,7 @@
           key: nodeInfo.key,
           path: nodeInfo.path,
           targetPath: nodeInfo.targetPath,
-          sourceValue: sourceValue,
+          // sourceValue: valueSource,
           oldValue: oldValue,
           newValue: nodeInfo.variable[nodeInfo.key],
         });
@@ -161,7 +160,18 @@
     });
   }
   function $merge(rootVariable, pathArray, sourceValue, callback) {
-    return $set(rootVariable, pathArray, sourceValue, callback, true);
+    function mergeSurceValueWrapping (oldValue) {
+      if (_isObject(oldValue) || _isArray(oldValue)) return _merge(oldValue, sourceValue);
+      if (_isObject(sourceValue)) return _merge({}, sourceValue);
+      if (_isArray(sourceValue)) return _merge([], sourceValue);
+      return sourceValue;
+    }
+    function updateCallback (event) {
+      event.sourceValue = sourceValue;
+      callback(event);
+    }
+    return $update(rootVariable, pathArray, mergeSurceValueWrapping, updateCallback);
+    // return $set(rootVariable, pathArray, sourceValue, callback, true);
   }
   // eslint-disable-next-line no-unused-vars
   function $deepMerge(varA, varB, path) {
@@ -461,6 +471,10 @@
         watchers[watcherId](event);
       }
     }
+    function _onEventForUpdate(event) {
+      event.method = 'update';
+      return _onEvent(event);
+    }
     function _onEventForSet(event) {
       event.method = 'set';
       return _onEvent(event);
@@ -486,6 +500,11 @@
       watcherIdCounter += 1;
       watchers[watcherIdCounter] = watcher;
       return _unwatchGenerator(watcherIdCounter);
+    }
+    function update_(pathArray, valueSource) {
+      if (arguments.length < 2) throw new Error('Need two arguments!');
+      pathArray = _parsePathArgument(pathArray, PATH_SEPARATOR);
+      return $update(rootVariable, [].concat(ROOT_PATH, pathArray), valueSource, _onEventForUpdate);
     }
     function set_(pathArray, val) {
       if (arguments.length < 2) throw new Error('Need two arguments!');
@@ -553,6 +572,7 @@
       }
     }
     boxes[BOX_NAME] = {
+      update: update_,
       get: get_,
       set: set_,
       merge: merge_,

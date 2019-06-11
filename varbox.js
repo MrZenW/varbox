@@ -603,4 +603,5 @@
   var Varbox = { createBox: createBox, getBox: getBox };
   if (typeof module === 'object') module.exports = Varbox;
   if (typeof window === 'object') window.Varbox = Varbox;
+  if (typeof self === 'object') self.Varbox = Varbox;
 })();

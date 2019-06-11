@@ -43,6 +43,8 @@ var box = Varbox.getBox();
 
 Through a valueSource function to set a value to the path of the box
 
+***The argument path can be null or undefined, it means update the root path variable in the box***
+
 ```JavaScript
 box.set(['classrooms', 'A','students', 'Ruofei', 'age'], function valueSource(oldValue) {
   return 4
@@ -61,7 +63,9 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 
 ----------
 
-### Varbox.box#<strong>get(path)</strong>
+### Varbox.box#<strong>get([path])</strong>
+
+***The argument path can be null or undefined or don't give, it means get the root path variable in the box***
 
 Get a value from the path of the box
 
@@ -79,6 +83,8 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 
 Set a value to the path of the box
 
+***The argument path can be null or undefined, it means set the root path variable in the box***
+
 ```JavaScript
 box.set('classrooms/A/students/Ruofei/age', 4);
 // or
@@ -92,6 +98,8 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 ### Varbox.box#<strong>merge(path, value)</strong>
 
 Merge a variable into the current variable;
+
+***The argument path can be null or undefined, it means merge the root path variable in the box***
 
 ```JavaScript
 box.merge('classrooms/A/students/Ruofei', { isAbsent: false });
@@ -129,9 +137,11 @@ box.delete(['classrooms', 'A','students', 'Ruofei']);
 
 ----------
 
-### Varbox.box#<strong>destory(path)</strong>
+### Varbox.box#<strong>destory([path])</strong>
 
 Delete all of the properties of all of the variables on and under the path argument.
+
+***The argument path can be null or undefined, it means destory the root path variable in the box***
 
 ```JavaScript
 box.destory('classrooms/A/students');

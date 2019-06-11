@@ -113,6 +113,7 @@
     if (!_isFunction(callback)) callback = BLANK_FUNCTION;
     return $nodeMap(rootVariable, pathArray, function _nodeMapSet(nodeInfo) {
       var oldValue = nodeInfo.variable[nodeInfo.key];
+      var isOldValueObject = _isObject(oldValue);
       var doesTheKeyExist = _has(nodeInfo.variable, nodeInfo.key);
       var eventType;
       if (nodeInfo.path.length === nodeInfo.targetPath.length) {
@@ -121,7 +122,12 @@
         } else {
           eventType = 'add';
         }
-        nodeInfo.variable[nodeInfo.key] = valueSource(oldValue, doesTheKeyExist);
+        
+        var newValue = valueSource(oldValue, doesTheKeyExist);
+        nodeInfo.variable[nodeInfo.key] = newValue;
+        if (isOldValueObject && _isObject(newValue) && oldValue === newValue) {
+          eventType = 'update';
+        }
         callback({
           eventType: eventType,
           variable: nodeInfo.variable,
@@ -134,12 +140,11 @@
         });
         return;
       }
-      var isObjectType = _isObject(oldValue);
-      if (!doesTheKeyExist || !isObjectType) {
+      if (!doesTheKeyExist || !isOldValueObject) {
         // a node but not exists, include null undefined NaN
         if (!doesTheKeyExist) {
           eventType = 'add';
-        } else if (!isObjectType) {
+        } else if (!isOldValueObject) {
           eventType = 'replace';
         }
         oldValue = undefined;

@@ -4,9 +4,9 @@
   "description": "An observable variable box",
   "main": "varbox.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "precommit": "npm run lint",
-    "prepush": "npm run lint",
+    "prepush": "npm run test",
     "lint": "eslint . --cache",
     "commit": "git-cz"
   },
@@ -34,6 +34,7 @@
   "devDependencies": {
     "eslint": "^5.16.0",
     "git-cz": "^3.0.1",
-    "husky": "^2.4.0"
+    "husky": "^2.4.0",
+    "jest": "^24.8.0"
   }
 }

@@ -48,7 +48,7 @@ box.set(['classrooms', 'A','students', 'Ruofei', 'age'], function valueSource(ol
   return 4
 });
 /* If you want to set a function as the value you should do the following. */
-box.set(['classrooms', 'A','students', 'Ruofei', 'ageComputeFunction'], function valueSource(oldValue) {
+box.set(['classrooms', 'A','students', 'Ruofei', 'ageComputeFunction'], function valueSource(oldValue, doesTheKeyExist) {
   /* a function which is the value instead of the valueSource */
   return function notValueSource() {
     // your codes

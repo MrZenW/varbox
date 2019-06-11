@@ -1,10 +1,11 @@
 // eslint-disable-next-line no-extra-semi
 ;
 'use strict';
-(function VarBoxModuleSpace(undefined) {
+(function VarBoxModuleSpace() {
+  var undefined = void(0);
   // var MATCHING_TYPE_PATH = 'MATCHING_TYPE_PATH';
   var MATCHING_TYPE_VARIABLE = 'MATCHING_TYPE_VARIABLE';
-  var ARRAY_TYPE_STRINGIFY = Object.prototype.toString.call([]);
+  var ARRAY_TYPE_STRINGIFY = Object.prototype.toString.call(Array());
   var _isArray = Array.isArray || function _isArray_(variable) {
     return Object.prototype.toString.call(variable) === ARRAY_TYPE_STRINGIFY;
   };
@@ -112,15 +113,15 @@
     if (!_isFunction(callback)) callback = BLANK_FUNCTION;
     return $nodeMap(rootVariable, pathArray, function _nodeMapSet(nodeInfo) {
       var oldValue = nodeInfo.variable[nodeInfo.key];
-      var isHaveTheKey = _has(nodeInfo.variable, nodeInfo.key);
+      var doesTheKeyExist = _has(nodeInfo.variable, nodeInfo.key);
       var eventType;
       if (nodeInfo.path.length === nodeInfo.targetPath.length) {
-        if (isHaveTheKey) {
+        if (doesTheKeyExist) {
           eventType = 'replace';
         } else {
           eventType = 'add';
         }
-        nodeInfo.variable[nodeInfo.key] = valueSource(oldValue);
+        nodeInfo.variable[nodeInfo.key] = valueSource(oldValue, doesTheKeyExist);
         callback({
           eventType: eventType,
           variable: nodeInfo.variable,
@@ -134,15 +135,15 @@
         return;
       }
       var isObjectType = _isObject(oldValue);
-      if (!isHaveTheKey || !isObjectType) {
+      if (!doesTheKeyExist || !isObjectType) {
         // a node but not exists, include null undefined NaN
-        if (!isHaveTheKey) {
+        if (!doesTheKeyExist) {
           eventType = 'add';
         } else if (!isObjectType) {
           eventType = 'replace';
         }
         oldValue = undefined;
-        if (isHaveTheKey) oldValue = nodeInfo.variable[nodeInfo.key];
+        if (doesTheKeyExist) oldValue = nodeInfo.variable[nodeInfo.key];
         nodeInfo.variable[nodeInfo.key] = {};
         callback({
           eventType: eventType,
@@ -593,6 +594,6 @@
     return boxes[boxName];
   }
   var Varbox = { createBox: createBox, getBox: getBox };
-  if (typeof module === 'object') module.exports = Varbox;
-  if (typeof window === 'object') window.Varbox = Varbox;
+  if (_isObject(module)) module.exports = Varbox;
+  if (_isObject(window)) window.Varbox = Varbox;
 })();

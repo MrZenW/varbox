@@ -3,7 +3,7 @@ var Varbox = require('./varbox');
 var box;
 var updateTestingKey = 'testUpdate';
 
-test('create a box', function () {
+test('Varbox.createBox()', function () {
   box = Varbox.createBox();
   var boxKeys = Object.keys(box);
 
@@ -60,13 +60,13 @@ test('create a box', function () {
   expect(box.everyNode.length).toEqual(2);
 });
 
-test('box watch function', function () {
+test('box.watch()', function () {
   box.watch(function (event) {
     expect(typeof event).toBe('object');
   });
 });
 
-test('box watchVariable function for update a new reference', function () {
+test('box.watchVariable() for update a new reference', function () {
   var unwatch = box.watchVariable(updateTestingKey, function (event) {
     expect(typeof unwatch).toBe('function');
     unwatch();
@@ -75,7 +75,7 @@ test('box watchVariable function for update a new reference', function () {
   });
 });
 
-test('box update a new reference', function () {
+test('box.update() a new reference', function () {
   var newValue = { Tom: { age: 3 } };
   box.update(updateTestingKey, function (oldValue) {
     expect(arguments.length).toBe(2);
@@ -100,7 +100,7 @@ test('box update a new reference', function () {
 });
 
 
-test('box watchVariable function for update the old reference', function () {
+test('box.watchVariable() for update the old reference', function () {
   var unwatch = box.watchVariable(updateTestingKey, function (event) {
     expect(typeof unwatch).toBe('function');
     unwatch();
@@ -109,7 +109,7 @@ test('box watchVariable function for update the old reference', function () {
   });
 });
 
-test('box update the old reference', function () {
+test('box.update() the old reference', function () {
   expect(box.get(updateTestingKey).Tom.age).not.toEqual(undefined);
   expect(box.get(updateTestingKey).Tom.age).not.toEqual(null);
   expect(typeof box.get(updateTestingKey).Tom.age).toBe('number');
@@ -125,3 +125,8 @@ test('box update the old reference', function () {
   expect(box.get(updateTestingKey).Tom.age).toEqual(oldAge + 1)
   
 });
+
+test.todo('box.watchPath()');
+test.todo('box.get()');
+test.todo('box.set()');
+test.todo('box.merge()');

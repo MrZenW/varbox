@@ -594,6 +594,6 @@
     return boxes[boxName];
   }
   var Varbox = { createBox: createBox, getBox: getBox };
-  if (_isObject(module)) module.exports = Varbox;
-  if (_isObject(window)) window.Varbox = Varbox;
+  if (typeof module === 'object') module.exports = Varbox;
+  if (typeof window === 'object') window.Varbox = Varbox;
 })();

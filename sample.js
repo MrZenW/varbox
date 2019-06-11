@@ -7,15 +7,16 @@ var box = Varbox.createBox({
   BOX_NAME: 'custom_box_name',
 });
 
-box.set('key/user/name', 'Varbox');
-console.log('#set "key/usr/name" to "Varbox": %o', box.get());
 
-var unwatchVariableFunction = box.watchVariable('key/user/name2', function (event) {
-  console.log('#event from watchVariable: %o', event);
-});
 var unwatchPathFunction = box.watchPath('key/user/name2', function (event) {
   console.log('#event from watchPath: %o', event);
 });
+var unwatchVariableFunction = box.watchVariable('key/user/name2', function (event) {
+  console.log('#event from watchVariable: %o', event);
+});
+
+box.set('key/user/name', 'Varbox');
+console.log('#set "key/usr/name" to "Varbox": %o', box.get());
 
 box.merge('key/user/name2', 'Varbox2');
 console.log('#merge "key/user/name2" to Varbox2: %o', box.get());

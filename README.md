@@ -181,30 +181,30 @@ The watcher function has an argument which used to describe what change happened
 
 ----------
 
-### Varbox.box#<strong>watchPath(path, watcher)</strong>
+### Varbox.box#<strong>watchVariable(path, watcher)</strong>
 
 Watching all of the paths which ***UNDER*** the path argument of the box.
 
 ```JavaScript
-box.watchPath('classrooms/A/students', function watcher(event) {
+box.watchVariable('classrooms/A/students', function watcher(event) {
   console.log(event);
 });
 // or
-box.watchPath(['classrooms', 'A', 'students'], function watcher(event) {
+box.watchVariable(['classrooms', 'A', 'students'], function watcher(event) {
   console.log(event);
 });
 // or
-box.watchPath('classrooms/+/students', function watcher(event) {
+box.watchVariable('classrooms/+/students', function watcher(event) {
   // + will match noly one node in the path.
   console.log(event);
 });
 // or
-box.watchPath('classrooms/#/students', function watcher(event) {
+box.watchVariable('classrooms/#/students', function watcher(event) {
   // # will match at least one node in the path.
   console.log(event);
 });
 // or
-box.watchPath(/^classrooms\/.*\/students/, function watcher(event) {
+box.watchVariable(/^classrooms\/.*\/students/, function watcher(event) {
   // this example used to show you a path is can be a RegExp.
   console.log(event);
 });
@@ -232,7 +232,7 @@ The watcher function has an argument which used to describe what change happened
 
 ----------
 
-### Varbox.box#<strong>watchVariable()</strong>
+### Varbox.box#<strong>watchPath()</strong>
 
 Watching all of the paths which ***ABOVE*** the path argument of the box.
 

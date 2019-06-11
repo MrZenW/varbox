@@ -1,4 +1,17 @@
-var Varbox = require('./varbox');
+var Varbox;
+test('require("varbox")', function () {
+  Varbox = require('./varbox');
+
+  var VarboxKeys = Object.keys(Varbox);
+
+  expect(VarboxKeys).toContain('createBox');
+  expect(typeof Varbox.createBox).toBe('function');
+  expect(Varbox.createBox.length).toEqual(1);
+
+  expect(VarboxKeys).toContain('getBox');
+  expect(typeof Varbox.getBox).toBe('function');
+  expect(Varbox.getBox.length).toEqual(1);
+});
 
 var box;
 var updateTestingKey = 'testUpdate';
@@ -62,38 +75,38 @@ test('Varbox.createBox()', function () {
 
 test('box.watch()', function () {
   box.watch(function (event) {
-    expect(typeof event).toBe('object');
+    expect(typeof event).toEqual('object');
   });
 });
 
 test('box.watchVariable() for update a new reference', function () {
   var unwatch = box.watchVariable(updateTestingKey, function (event) {
-    expect(typeof unwatch).toBe('function');
+    expect(typeof unwatch).toEqual('function');
     unwatch();
-    expect(typeof event).toBe('object');
-    expect(event.eventType).toBe('add');
+    expect(typeof event).toEqual('object');
+    expect(event.eventType).toEqual('add');
   });
 });
 
 test('box.update() a new reference', function () {
   var newValue = { Tom: { age: 3 } };
   box.update(updateTestingKey, function (oldValue) {
-    expect(arguments.length).toBe(2);
+    expect(arguments.length).toEqual(2);
     return newValue;
   })
   expect(box.get(updateTestingKey)).toEqual(newValue);
 
-  expect(box.get(updateTestingKey)).not.toEqual(undefined);
-  expect(box.get(updateTestingKey)).not.toEqual(null);
-  expect(typeof box.get(updateTestingKey)).toBe('object');
+  expect(box.get(updateTestingKey)).not.toBe(undefined);
+  expect(box.get(updateTestingKey)).not.toBe(null);
+  expect(typeof box.get(updateTestingKey)).toEqual('object');
 
-  expect(box.get(updateTestingKey).Tom).not.toEqual(undefined);
-  expect(box.get(updateTestingKey).Tom).not.toEqual(null);
-  expect(typeof box.get(updateTestingKey).Tom).toBe('object');
+  expect(box.get(updateTestingKey).Tom).not.toBe(undefined);
+  expect(box.get(updateTestingKey).Tom).not.toBe(null);
+  expect(typeof box.get(updateTestingKey).Tom).toEqual('object');
 
-  expect(box.get(updateTestingKey).Tom.age).not.toEqual(undefined);
-  expect(box.get(updateTestingKey).Tom.age).not.toEqual(null);
-  expect(typeof box.get(updateTestingKey).Tom.age).toBe('number');
+  expect(box.get(updateTestingKey).Tom.age).not.toBe(undefined);
+  expect(box.get(updateTestingKey).Tom.age).not.toBe(null);
+  expect(typeof box.get(updateTestingKey).Tom.age).toEqual('number');
   expect(box.get(updateTestingKey).Tom.age).toEqual(3);
 
   
@@ -102,23 +115,23 @@ test('box.update() a new reference', function () {
 
 test('box.watchVariable() for update the old reference', function () {
   var unwatch = box.watchVariable(updateTestingKey, function (event) {
-    expect(typeof unwatch).toBe('function');
+    expect(typeof unwatch).toEqual('function');
     unwatch();
-    expect(typeof event).toBe('object');
-    expect(event.eventType).toBe('update');
+    expect(typeof event).toEqual('object');
+    expect(event.eventType).toEqual('update');
   });
 });
 
 test('box.update() the old reference', function () {
-  expect(box.get(updateTestingKey).Tom.age).not.toEqual(undefined);
-  expect(box.get(updateTestingKey).Tom.age).not.toEqual(null);
-  expect(typeof box.get(updateTestingKey).Tom.age).toBe('number');
+  expect(box.get(updateTestingKey).Tom.age).not.toBe(undefined);
+  expect(box.get(updateTestingKey).Tom.age).not.toBe(null);
+  expect(typeof box.get(updateTestingKey).Tom.age).toEqual('number');
   expect(box.get(updateTestingKey).Tom.age).toEqual(3);
 
   var oldAge = box.get(updateTestingKey).Tom.age;
 
   box.update(updateTestingKey, function (oldValue) {
-    expect(arguments.length).toBe(2);
+    expect(arguments.length).toEqual(2);
     oldValue.Tom.age += 1;
     return oldValue;
   })

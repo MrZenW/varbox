@@ -376,7 +376,8 @@
     };
   }
 
-  function _checkIfMatchedForWatchVariable(event, matchPathInfo) {
+  // xxx/path/subpath
+  function _checkIfMatchedForWatchPath(event, matchPathInfo) {
     var isMatchPathArray = matchPathInfo.isMatchPathArray;
     var isMatchPathRegExp = matchPathInfo.isMatchPathRegExp;
     var matchPath = matchPathInfo.matchPath;
@@ -402,7 +403,8 @@
     }
   }
 
-  function _checkIfMatchedForWatchPath(event, matchPathInfo) {
+  // path/subpath/xxx
+  function _checkIfMatchedForWatchVariable(event, matchPathInfo) {
     var isMatchPathArray = matchPathInfo.isMatchPathArray;
     var isMatchPathRegExp = matchPathInfo.isMatchPathRegExp;
     var matchPath = matchPathInfo.matchPath;

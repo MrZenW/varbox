@@ -631,7 +631,13 @@
     return _merge({}, theBox);
   }
   function getBox (boxName) {
-    if (0 === arguments.length) return _merge({}, BOXES);
+    if (0 === arguments.length) {
+      var allBox = _merge({}, BOXES);
+      for (var aBoxName in allBox) {
+        allBox[aBoxName] = _merge({}, allBox[aBoxName]);
+      }
+      return allBox;
+    }
     var theBox = BOXES[boxName];
     if (theBox) return _merge({}, theBox);
     return _undefined();

@@ -464,22 +464,30 @@
     return pathArg;
   }
 
-  var boxes = {};
-  var boxNameCounter = 0;
+  var BOXES = {};
+  var boxCounter = 0;
   function createBox(opts) {
-    boxNameCounter += 1;
-    var BOX_NAME = 'COUNT__' + boxNameCounter;
+    // box name
+    var BOX_NAME = _undefined();
+    if ('string' === typeof opts) BOX_NAME = opts;
+    if (!_isObject(opts)) opts = {};
+    if (_has(opts, 'BOX_NAME')) BOX_NAME = '' + opts['BOX_NAME'];
+    if (!BOX_NAME) {
+      boxCounter += 1;
+      BOX_NAME = '' + boxCounter;
+    }
+    var existedBox = getBox(BOX_NAME);
+    if (existedBox) return existedBox;
+
     var PATH_SEPARATOR = '/';
     var ROOT_PATH = ['ROOT'];
-    var rootVariable = {};
-    if (!_isObject(opts)) opts = {};
     if (_has(opts, 'ROOT_PATH')) {
       ROOT_PATH = opts['ROOT_PATH'];
       if (!_isArray(ROOT_PATH)) ROOT_PATH = [ROOT_PATH];
     }
     if (_has(opts, 'PATH_SEPARATOR')) PATH_SEPARATOR = opts['PATH_SEPARATOR'];
-    if (_has(opts, 'BOX_NAME')) BOX_NAME = 'BOX_NAME__' + opts['BOX_NAME'];
 
+    var rootVariable = {};
     var watcherIdCounter = 0;
     var watchers = {};
     function _onEvent(event) {
@@ -604,7 +612,7 @@
         return callback(null);
       }
     }
-    boxes[BOX_NAME] = {
+    var theBox = {
       update: update_,
       get: get_,
       set: set_,
@@ -619,11 +627,14 @@
       nodeBackMap: nodeBackMap_,
       everyNode: everyNode_
     };
-    return boxes[BOX_NAME];
+    BOXES[BOX_NAME] = theBox;
+    return _merge({}, theBox);
   }
   function getBox (boxName) {
-    if (0 === arguments.length) return _merge({}, boxes);
-    return boxes[boxName];
+    if (0 === arguments.length) return _merge({}, BOXES);
+    var theBox = BOXES[boxName];
+    if (theBox) return _merge({}, theBox);
+    return _undefined();
   }
   var Varbox = { createBox: createBox, getBox: getBox };
   if ('object' === typeof module) module.exports = Varbox;

@@ -17,7 +17,7 @@ var box;
 var updateTestingKey = 'testUpdate';
 
 test('Varbox.createBox()', function () {
-  box = Varbox.createBox();
+  box = Varbox.createBox('firstBox');
   var boxKeys = Object.keys(box);
 
   expect(boxKeys).toContain('get');
@@ -71,6 +71,92 @@ test('Varbox.createBox()', function () {
   expect(boxKeys).toContain('everyNode');
   expect(typeof box.everyNode).toBe('function');
   expect(box.everyNode.length).toEqual(2);
+});
+
+test('Varbox.createBox() with the same box name: firstBox', function() {
+  var box = Varbox.createBox('firstBox');
+  var boxGetAgain1 = Varbox.createBox('firstBox');
+
+  var boxGetAgain2 = Varbox.createBox({
+    BOX_NAME: 'firstBox',
+  });
+
+  for (var k in box) {
+    expect(box[k]).toBe(boxGetAgain1[k]);
+    expect(box[k]).toBe(boxGetAgain2[k]);
+
+    expect(boxGetAgain1[k]).toBe(box[k]);
+    expect(boxGetAgain1[k]).toBe(boxGetAgain2[k]);
+
+    expect(boxGetAgain2[k]).toBe(box[k]);
+    expect(boxGetAgain2[k]).toBe(boxGetAgain1[k]);
+  }
+});
+
+test('Varbox.createBox() with different box name', function() {
+  var box = Varbox.createBox('firstBox');
+
+  var otherBox1 = Varbox.createBox('secondBox');
+  var otherBox2 = Varbox.createBox({
+    BOX_NAME: 'secondBoxWithJSONConfiguration',
+  });
+  var otherBox3 = Varbox.createBox('');
+  var otherBox4 = Varbox.createBox();
+
+  for (var k in box) {
+    expect(box[k]).not.toBe(otherBox1[k]);
+    expect(box[k]).not.toBe(otherBox2[k]);
+    expect(box[k]).not.toBe(otherBox3[k]);
+    expect(box[k]).not.toBe(otherBox4[k]);
+
+    expect(otherBox1[k]).not.toBe(box[k]);
+    expect(otherBox1[k]).not.toBe(otherBox2[k]);
+    expect(otherBox1[k]).not.toBe(otherBox3[k]);
+    expect(otherBox1[k]).not.toBe(otherBox4[k]);
+
+    expect(otherBox2[k]).not.toBe(box[k]);
+    expect(otherBox2[k]).not.toBe(otherBox1[k]);
+    expect(otherBox2[k]).not.toBe(otherBox3[k]);
+    expect(otherBox2[k]).not.toBe(otherBox4[k]);
+
+    expect(otherBox3[k]).not.toBe(box[k]);
+    expect(otherBox3[k]).not.toBe(otherBox1[k]);
+    expect(otherBox3[k]).not.toBe(otherBox2[k]);
+    expect(otherBox3[k]).not.toBe(otherBox4[k]);
+
+    expect(otherBox4[k]).not.toBe(box[k]);
+    expect(otherBox4[k]).not.toBe(otherBox1[k]);
+    expect(otherBox4[k]).not.toBe(otherBox2[k]);
+    expect(otherBox4[k]).not.toBe(otherBox3[k]);
+  }
+});
+
+test('Varbox.createBox() with empty box name', function() {
+  var box = Varbox.createBox();
+
+  var boxGetAgain1 = Varbox.createBox('');
+  var boxGetAgain2 = Varbox.createBox({
+    BOX_NAME: '',
+  });
+  var boxGetAgain3 = Varbox.createBox({});
+
+  for (var k in box) {
+    expect(box[k]).not.toBe(boxGetAgain1[k]);
+    expect(box[k]).not.toBe(boxGetAgain2[k]);
+    expect(box[k]).not.toBe(boxGetAgain3[k]);
+
+    expect(boxGetAgain1[k]).not.toBe(box[k]);
+    expect(boxGetAgain1[k]).not.toBe(boxGetAgain2[k]);
+    expect(boxGetAgain1[k]).not.toBe(boxGetAgain3[k]);
+
+    expect(boxGetAgain2[k]).not.toBe(box[k]);
+    expect(boxGetAgain2[k]).not.toBe(boxGetAgain1[k]);
+    expect(boxGetAgain2[k]).not.toBe(boxGetAgain3[k]);
+
+    expect(boxGetAgain3[k]).not.toBe(box[k]);
+    expect(boxGetAgain3[k]).not.toBe(boxGetAgain1[k]);
+    expect(boxGetAgain3[k]).not.toBe(boxGetAgain2[k]);
+  }
 });
 
 test('box.watch()', function () {

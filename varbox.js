@@ -2,7 +2,19 @@
 ;
 'use strict';
 (function VarBoxModuleSpace() {
-  var undefined = void(0);
+  /**
+   * the getUndefined() function is used to avoid
+   * the programmer I make any mistake cause the undefined
+   * variable to be overridden
+   */
+  function getUndefined (){ return void 0; }
+  /**
+   * the undefined variable is used to avoid the programmer I 
+   * to use the undefined variable directly
+   */
+  // eslint-disable-next-line no-unused-vars
+  var undefined = getUndefined();
+
   // var MATCHING_TYPE_PATH = 'MATCHING_TYPE_PATH';
   var MATCHING_TYPE_VARIABLE = 'MATCHING_TYPE_VARIABLE';
 
@@ -27,7 +39,7 @@
     }
   }
   function _isNone(value) {
-    if (value === undefined || value === null) return true;
+    if (value === getUndefined() || null === value) return true;
     if (isNaN(value) && 'number' === typeof value) return true;
     return false;
   }
@@ -48,7 +60,7 @@
     return 'function' === typeof variable;
   }
   function _isObject(variable) {
-    return 'object' === typeof variable && variable === Object(variable);
+    return 'object' === typeof variable && Object(variable) === variable;
   }
   function _merge(target) {
     if (_isNone(target)) throw new TypeError('Cannot convert undefined or null to object');
@@ -160,7 +172,7 @@
         } else if (!isOldValueObject) {
           eventType = 'replace';
         }
-        oldValue = undefined;
+        oldValue = getUndefined();
         if (doesTheKeyExist) oldValue = nodeInfo.variable[nodeInfo.key];
         nodeInfo.variable[nodeInfo.key] = {};
         callback({
@@ -315,7 +327,7 @@
     var currentCache = _everyNodeDuplicateCache[contextKey];
     function _do(key) {
       var v = variable[key];
-      if (!_isObject(v) || currentCache.indexOf(v) === -1) {
+      if (!_isObject(v) || -1 === currentCache.indexOf(v)) {
         // don't cache non-object variable
         currentCache.push(v);
         var p = [].concat(itsPath, key);
@@ -346,7 +358,7 @@
       }
     } else if (isTopLevel) {
       callback({
-        variable: undefined,
+        variable: getUndefined(),
         key: itsKey,
         value: variable,
         path: itsPath,
@@ -412,7 +424,7 @@
       }
       return isMatched;
     } else {
-      return matchPath.indexOf(event.pathString) === 0;
+      return 0 === matchPath.indexOf(event.pathString);
     }
   }
 
@@ -440,14 +452,14 @@
       }
       return isMatched;
     } else if ('string' === typeof event.pathString) {
-      return event.pathString.indexOf(matchPath) === 0;
+      return 0 === event.pathString.indexOf(matchPath);
     } else {
       return event.pathString === matchPath;
     }
   }
 
   function _parsePathArgument(pathArg, PATH_SEPARATOR) {
-    if (typeof pathArg === 'string') return pathArg.split(PATH_SEPARATOR);
+    if ('string' === typeof pathArg) return pathArg.split(PATH_SEPARATOR);
     if (!_isArray(pathArg)) return [];
     return pathArg;
   }
@@ -474,16 +486,16 @@
       event = _merge({}, event);
       if (_isArray(event.path)) {
         event.path = event.path.slice(ROOT_PATH.length);
-        if (event.path.length === 0) {
-          event.pathString = undefined;
+        if (0 === event.path.length) {
+          event.pathString = getUndefined();
         } else {
           event.pathString = event.path.join(PATH_SEPARATOR);
         }
       }
       if (_isArray(event.targetPath)) {
         event.targetPath = event.targetPath.slice(ROOT_PATH.length);
-        if (event.targetPath.length === 0) {
-          event.targetPathString = undefined;
+        if (0 === event.targetPath.length) {
+          event.targetPathString = getUndefined();
         } else {
           event.targetPathString = event.targetPath.join(PATH_SEPARATOR);
         }
@@ -533,7 +545,7 @@
       return $set(rootVariable, [].concat(ROOT_PATH, pathArray), val, _onEventForSet);
     }
     function get_(pathArray) {
-      if (arguments.length === 0) return rootVariable[ROOT_PATH];
+      if (0 === arguments.length) return rootVariable[ROOT_PATH];
       pathArray = _parsePathArgument(pathArray, PATH_SEPARATOR);
       return $get(rootVariable, [].concat(ROOT_PATH, pathArray));
     }
@@ -610,11 +622,11 @@
     return boxes[BOX_NAME];
   }
   function getBox (boxName) {
-    if (arguments.length === 0) return _merge({}, boxes);
+    if (0 === arguments.length) return _merge({}, boxes);
     return boxes[boxName];
   }
   var Varbox = { createBox: createBox, getBox: getBox };
-  if (typeof module === 'object') module.exports = Varbox;
-  if (typeof window === 'object') window.Varbox = Varbox;
-  if (typeof self === 'object') self.Varbox = Varbox;
+  if ('object' === typeof module) module.exports = Varbox;
+  if ('object' === typeof window) window.Varbox = Varbox;
+  if ('object' === typeof self) self.Varbox = Varbox;
 })();

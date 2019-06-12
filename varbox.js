@@ -3,17 +3,17 @@
 'use strict';
 (function VarBoxModuleSpace() {
   /**
-   * the getUndefined() function is used to avoid
-   * the programmer I make any mistake cause the undefined
-   * variable to be overridden
+   * the _undefined() function is used to avoid
+   * the programmer I make any mistake cause the
+   * undefined variable to be overridden
    */
-  function getUndefined (){ return void 0; }
+  function _undefined (){ return void 0; }
   /**
    * the undefined variable is used to avoid the programmer I 
    * to use the undefined variable directly
    */
   // eslint-disable-next-line no-unused-vars
-  var undefined = getUndefined();
+  var undefined = _undefined();
 
   // var MATCHING_TYPE_PATH = 'MATCHING_TYPE_PATH';
   var MATCHING_TYPE_VARIABLE = 'MATCHING_TYPE_VARIABLE';
@@ -39,7 +39,7 @@
     }
   }
   function _isNone(value) {
-    if (value === getUndefined() || null === value) return true;
+    if (value === _undefined() || null === value) return true;
     if (isNaN(value) && 'number' === typeof value) return true;
     return false;
   }
@@ -172,7 +172,7 @@
         } else if (!isOldValueObject) {
           eventType = 'replace';
         }
-        oldValue = getUndefined();
+        oldValue = _undefined();
         if (doesTheKeyExist) oldValue = nodeInfo.variable[nodeInfo.key];
         nodeInfo.variable[nodeInfo.key] = {};
         callback({
@@ -358,7 +358,7 @@
       }
     } else if (isTopLevel) {
       callback({
-        variable: getUndefined(),
+        variable: _undefined(),
         key: itsKey,
         value: variable,
         path: itsPath,
@@ -487,7 +487,7 @@
       if (_isArray(event.path)) {
         event.path = event.path.slice(ROOT_PATH.length);
         if (0 === event.path.length) {
-          event.pathString = getUndefined();
+          event.pathString = _undefined();
         } else {
           event.pathString = event.path.join(PATH_SEPARATOR);
         }
@@ -495,7 +495,7 @@
       if (_isArray(event.targetPath)) {
         event.targetPath = event.targetPath.slice(ROOT_PATH.length);
         if (0 === event.targetPath.length) {
-          event.targetPathString = getUndefined();
+          event.targetPathString = _undefined();
         } else {
           event.targetPathString = event.targetPath.join(PATH_SEPARATOR);
         }

@@ -5,13 +5,26 @@
   var undefined = void(0);
   // var MATCHING_TYPE_PATH = 'MATCHING_TYPE_PATH';
   var MATCHING_TYPE_VARIABLE = 'MATCHING_TYPE_VARIABLE';
-  var ARRAY_TYPE_STRINGIFY = Object.prototype.toString.call(Array());
-  var _isArray = Array.isArray || function _isArray_(variable) {
-    return Object.prototype.toString.call(variable) === ARRAY_TYPE_STRINGIFY;
-  };
+
   function BLANK_FUNCTION () {}
   function DEFAULT_EXIST_CHECKER (nodeInfo) {
     return _has(nodeInfo.variable, nodeInfo.key);
+  }
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill
+  var ARRAY_TYPE_STRINGIFY = Object.prototype.toString.call(Array());
+  function _isArray(variable) {
+    return Object.prototype.toString.call(variable) === ARRAY_TYPE_STRINGIFY;
+  }
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is#Polyfill
+  function _is(x, y) {
+    // SameValue algorithm
+    if (x === y) { // Steps 1-5, 7-10
+      // Steps 6.b-6.e: +0 != -0
+      return x !== 0 || 1 / x === 1 / y;
+    } else {
+      // Step 6.a: NaN == NaN
+      return x !== x && y !== y;
+    }
   }
   function _isNone(value) {
     if (value === undefined || value === null) return true;
@@ -125,7 +138,7 @@
         
         var newValue = valueSource(oldValue, doesTheKeyExist);
         nodeInfo.variable[nodeInfo.key] = newValue;
-        if (isOldValueObject && _isObject(newValue) && oldValue === newValue) {
+        if (isOldValueObject && _isObject(newValue) && _is(oldValue, newValue)) {
           eventType = 'update';
         }
         callback({

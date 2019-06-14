@@ -21,6 +21,8 @@ Create a variable box
 ```JavaScript
 var box = Varbox.createBox();
 // or
+var box = Varbox.createBox('custom_box_name');
+// or
 var box = Varbox.createBox({
   ROOT_PATH: ['ROOT'],
   PATH_SEPARATOR: '/',
@@ -37,7 +39,7 @@ return a varbox by the argument `boxName`, it will return all of the boxes if th
 ```JavaScript
 var box = Varbox.getBox('boxName');
 // or
-var box = Varbox.getBox();
+var allBoxes = Varbox.getBox();
 ```
 
 ----------

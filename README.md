@@ -1,7 +1,7 @@
 # Varbox
 **An observable variable box.**
 
-*Pure es5 with no any dependencies, no Promise feature dependence, no Proxy feature dependence, no modification on both the original variable and its prototype. Perfectly suitable for any JavaScript environment such as Node.JS and any browser.*
+*Pure es5 with no any dependencies, no Promise feature dependence, no Proxy feature dependence, no modification on both the original variable and its prototype. Perfectly suitable for every JavaScript environment such as Node.JS and any browser.*
 
 
 ## Installation

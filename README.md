@@ -1,5 +1,8 @@
 # Varbox
-An observable variable box
+**An observable variable box.**
+
+*Pure es5 with no any dependencies, no Promise feature dependence, no Proxy feature dependence, no modification on both the original variable and its prototype. Perfectly suitable for any JavaScript environment such as Node.JS and any browser.*
+
 
 ## Installation
 
@@ -46,11 +49,11 @@ Through a valueSource function to set a value to the path of the box
 ***The argument path can be null or undefined, it means update the root path variable in the box***
 
 ```JavaScript
-box.set(['classrooms', 'A','students', 'Ruofei', 'age'], function valueSource(oldValue) {
+box.update(['classrooms', 'A','students', 'Ruofei', 'age'], function valueSource(oldValue) {
   return 4
 });
 /* If you want to set a function as the value you should do the following. */
-box.set(['classrooms', 'A','students', 'Ruofei', 'ageComputeFunction'], function valueSource(oldValue, doesTheKeyExist) {
+box.update(['classrooms', 'A','students', 'Ruofei', 'ageComputeFunction'], function valueSource(oldValue, doesTheKeyExist) {
   /* a function which is the value instead of the valueSource */
   return function notValueSource() {
     // your codes

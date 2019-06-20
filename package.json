@@ -10,6 +10,9 @@
     "lint": "eslint . --cache",
     "commit": "git-cz"
   },
+  "files": [
+    "varbox.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zenboss/varbox.git"

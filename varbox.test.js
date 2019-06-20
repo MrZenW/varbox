@@ -1,79 +1,82 @@
+var assert = require('assert');
+var ok = assert.ok;
 var Varbox;
-test('require("varbox")', function () {
+
+ok((function () {
   Varbox = require('./varbox');
 
-  var VarboxKeys = Object.keys(Varbox);
+  ok('createBox' in Varbox);
+  ok('function' === typeof Varbox.createBox);
+  ok(1 === Varbox.createBox.length);
 
-  expect(VarboxKeys).toContain('createBox');
-  expect(typeof Varbox.createBox).toBe('function');
-  expect(Varbox.createBox.length).toEqual(1);
-
-  expect(VarboxKeys).toContain('getBox');
-  expect(typeof Varbox.getBox).toBe('function');
-  expect(Varbox.getBox.length).toEqual(1);
-});
+  ok('getBox' in Varbox);
+  ok('function' === typeof Varbox.getBox);
+  ok(1 === Varbox.getBox.length);
+  return true;
+})(), 'require("varbox")');
 
 var box;
 var updateTestingKey = 'testUpdate';
 
-test('Varbox.createBox()', function () {
+ok((function() {
   box = Varbox.createBox('firstBox');
-  var boxKeys = Object.keys(box);
 
-  expect(boxKeys).toContain('get');
-  expect(typeof box.get).toBe('function');
-  expect(box.get.length).toEqual(1);
+  ok('get' in box);
+  ok('function' === typeof box.get);
+  ok(1 === box.get.length);
 
-  expect(boxKeys).toContain('set');
-  expect(typeof box.set).toBe('function');
-  expect(box.set.length).toEqual(2);
+  ok('set' in box);
+  ok('function' === typeof box.set);
+  ok(2 === box.set.length);
 
-  expect(boxKeys).toContain('update');
-  expect(typeof box.update).toBe('function');
-  expect(box.update.length).toEqual(2);
+  ok('update' in box);
+  ok('function' === typeof box.update);
+  ok(2 === box.update.length);
 
-  expect(boxKeys).toContain('merge');
-  expect(typeof box.merge).toBe('function');
-  expect(box.merge.length).toEqual(2);
+  ok('merge' in box);
+  ok('function' === typeof box.merge);
+  ok(2 === box.merge.length);
 
-  expect(boxKeys).toContain('has');
-  expect(typeof box.has).toBe('function');
-  expect(box.has.length).toEqual(1);
+  ok('has' in box);
+  ok('function' === typeof box.has);
+  ok(1 === box.has.length);
 
-  expect(boxKeys).toContain('delete');
-  expect(typeof box.delete).toBe('function');
-  expect(box.delete.length).toEqual(1);
+  ok('delete' in box);
+  ok('function' === typeof box.delete);
+  ok(1 === box.delete.length);
 
-  expect(boxKeys).toContain('destory');
-  expect(typeof box.destory).toBe('function');
-  expect(box.destory.length).toEqual(1);
+  ok('destory' in box);
+  ok('function' === typeof box.destory);
+  ok(1 === box.destory.length);
 
-  expect(boxKeys).toContain('watch');
-  expect(typeof box.watch).toBe('function');
-  expect(box.watch.length).toEqual(1);
+  ok('watch' in box);
+  ok('function' === typeof box.watch);
+  ok(1 === box.watch.length);
 
-  expect(boxKeys).toContain('watchPath');
-  expect(typeof box.watchPath).toBe('function');
-  expect(box.watchPath.length).toEqual(3);
+  ok('watchPath' in box);
+  ok('function' === typeof box.watchPath);
+  ok(3 === box.watchPath.length);
 
-  expect(boxKeys).toContain('watchVariable');
-  expect(typeof box.watchVariable).toBe('function');
-  expect(box.watchVariable.length).toEqual(2);
+  ok('watchVariable' in box);
+  ok('function' === typeof box.watchVariable);
+  ok(2 === box.watchVariable.length);
 
-  expect(boxKeys).toContain('nodeMap');
-  expect(typeof box.nodeMap).toBe('function');
-  expect(box.nodeMap.length).toEqual(2);
+  ok('nodeMap' in box);
+  ok('function' === typeof box.nodeMap);
+  ok(2 === box.nodeMap.length);
 
-  expect(boxKeys).toContain('nodeBackMap');
-  expect(typeof box.nodeBackMap).toBe('function');
-  expect(box.nodeBackMap.length).toEqual(2);
+  ok('nodeBackMap' in box);
+  ok('function' === typeof box.nodeBackMap);
+  ok(2 === box.nodeBackMap.length);
 
-  expect(boxKeys).toContain('everyNode');
-  expect(typeof box.everyNode).toBe('function');
-  expect(box.everyNode.length).toEqual(2);
-});
+  ok('everyNode' in box);
+  ok('function' === typeof box.everyNode);
+  ok(2 === box.everyNode.length);
 
-test('Varbox.createBox() with the same box name: firstBox', function() {
+  return true;
+})(), 'Varbox.createBox()');
+
+ok((function() {
   var box = Varbox.createBox('firstBox');
   var boxGetAgain1 = Varbox.createBox('firstBox');
 
@@ -82,18 +85,19 @@ test('Varbox.createBox() with the same box name: firstBox', function() {
   });
 
   for (var k in box) {
-    expect(box[k]).toBe(boxGetAgain1[k]);
-    expect(box[k]).toBe(boxGetAgain2[k]);
+    ok(box[k] === boxGetAgain1[k]);
+    ok(box[k] === boxGetAgain2[k]);
 
-    expect(boxGetAgain1[k]).toBe(box[k]);
-    expect(boxGetAgain1[k]).toBe(boxGetAgain2[k]);
+    ok(boxGetAgain1[k] === box[k]);
+    ok(boxGetAgain1[k] === boxGetAgain2[k]);
 
-    expect(boxGetAgain2[k]).toBe(box[k]);
-    expect(boxGetAgain2[k]).toBe(boxGetAgain1[k]);
+    ok(boxGetAgain2[k] === box[k]);
+    ok(boxGetAgain2[k] === boxGetAgain1[k]);
   }
-});
+  return true;
+})(), 'Varbox.createBox() with the same box name: firstBox');
 
-test('Varbox.createBox() with different box name', function() {
+ok((function() {
   var box = Varbox.createBox('firstBox');
 
   var otherBox1 = Varbox.createBox('secondBox');
@@ -104,34 +108,35 @@ test('Varbox.createBox() with different box name', function() {
   var otherBox4 = Varbox.createBox();
 
   for (var k in box) {
-    expect(box[k]).not.toBe(otherBox1[k]);
-    expect(box[k]).not.toBe(otherBox2[k]);
-    expect(box[k]).not.toBe(otherBox3[k]);
-    expect(box[k]).not.toBe(otherBox4[k]);
+    ok(box[k] !== otherBox1[k]);
+    ok(box[k] !== otherBox2[k]);
+    ok(box[k] !== otherBox3[k]);
+    ok(box[k] !== otherBox4[k]);
 
-    expect(otherBox1[k]).not.toBe(box[k]);
-    expect(otherBox1[k]).not.toBe(otherBox2[k]);
-    expect(otherBox1[k]).not.toBe(otherBox3[k]);
-    expect(otherBox1[k]).not.toBe(otherBox4[k]);
+    ok(otherBox1[k] !== box[k]);
+    ok(otherBox1[k] !== otherBox2[k]);
+    ok(otherBox1[k] !== otherBox3[k]);
+    ok(otherBox1[k] !== otherBox4[k]);
 
-    expect(otherBox2[k]).not.toBe(box[k]);
-    expect(otherBox2[k]).not.toBe(otherBox1[k]);
-    expect(otherBox2[k]).not.toBe(otherBox3[k]);
-    expect(otherBox2[k]).not.toBe(otherBox4[k]);
+    ok(otherBox2[k] !== box[k]);
+    ok(otherBox2[k] !== otherBox1[k]);
+    ok(otherBox2[k] !== otherBox3[k]);
+    ok(otherBox2[k] !== otherBox4[k]);
 
-    expect(otherBox3[k]).not.toBe(box[k]);
-    expect(otherBox3[k]).not.toBe(otherBox1[k]);
-    expect(otherBox3[k]).not.toBe(otherBox2[k]);
-    expect(otherBox3[k]).not.toBe(otherBox4[k]);
+    ok(otherBox3[k] !== box[k]);
+    ok(otherBox3[k] !== otherBox1[k]);
+    ok(otherBox3[k] !== otherBox2[k]);
+    ok(otherBox3[k] !== otherBox4[k]);
 
-    expect(otherBox4[k]).not.toBe(box[k]);
-    expect(otherBox4[k]).not.toBe(otherBox1[k]);
-    expect(otherBox4[k]).not.toBe(otherBox2[k]);
-    expect(otherBox4[k]).not.toBe(otherBox3[k]);
+    ok(otherBox4[k] !== box[k]);
+    ok(otherBox4[k] !== otherBox1[k]);
+    ok(otherBox4[k] !== otherBox2[k]);
+    ok(otherBox4[k] !== otherBox3[k]);
   }
-});
+  return true;
+})(), 'Varbox.createBox() with different box name');
 
-test('Varbox.createBox() with empty box name', function() {
+ok((function(){
   var box = Varbox.createBox();
 
   var boxGetAgain1 = Varbox.createBox('');
@@ -141,91 +146,90 @@ test('Varbox.createBox() with empty box name', function() {
   var boxGetAgain3 = Varbox.createBox({});
 
   for (var k in box) {
-    expect(box[k]).not.toBe(boxGetAgain1[k]);
-    expect(box[k]).not.toBe(boxGetAgain2[k]);
-    expect(box[k]).not.toBe(boxGetAgain3[k]);
+    ok(box[k] !== boxGetAgain1[k]);
+    ok(box[k] !== boxGetAgain2[k]);
+    ok(box[k] !== boxGetAgain3[k]);
 
-    expect(boxGetAgain1[k]).not.toBe(box[k]);
-    expect(boxGetAgain1[k]).not.toBe(boxGetAgain2[k]);
-    expect(boxGetAgain1[k]).not.toBe(boxGetAgain3[k]);
+    ok(boxGetAgain1[k] !== box[k]);
+    ok(boxGetAgain1[k] !== boxGetAgain2[k]);
+    ok(boxGetAgain1[k] !== boxGetAgain3[k]);
 
-    expect(boxGetAgain2[k]).not.toBe(box[k]);
-    expect(boxGetAgain2[k]).not.toBe(boxGetAgain1[k]);
-    expect(boxGetAgain2[k]).not.toBe(boxGetAgain3[k]);
+    ok(boxGetAgain2[k] !== box[k]);
+    ok(boxGetAgain2[k] !== boxGetAgain1[k]);
+    ok(boxGetAgain2[k] !== boxGetAgain3[k]);
 
-    expect(boxGetAgain3[k]).not.toBe(box[k]);
-    expect(boxGetAgain3[k]).not.toBe(boxGetAgain1[k]);
-    expect(boxGetAgain3[k]).not.toBe(boxGetAgain2[k]);
+    ok(boxGetAgain3[k] !== box[k]);
+    ok(boxGetAgain3[k] !== boxGetAgain1[k]);
+    ok(boxGetAgain3[k] !== boxGetAgain2[k]);
   }
+  return true;
+})(), 'Varbox.createBox() with empty box name');
+
+box.watch(function (event) {
+  ok('object' === typeof event);
 });
 
-test('box.watch()', function () {
-  box.watch(function (event) {
-    expect(typeof event).toEqual('object');
-  });
+var unwatch = box.watchVariable(updateTestingKey, function (event) {
+  ok('function' === typeof unwatch);
+  unwatch();
+  ok('object' === typeof event);
+  ok('add' === event.eventType);
 });
 
-test('box.watchVariable() for update a new reference', function () {
-  var unwatch = box.watchVariable(updateTestingKey, function (event) {
-    expect(typeof unwatch).toEqual('function');
-    unwatch();
-    expect(typeof event).toEqual('object');
-    expect(event.eventType).toEqual('add');
-  });
-});
-
-test('box.update() a new reference', function () {
+ok((function() {
   var newValue = { Tom: { age: 3 } };
   box.update(updateTestingKey, function (oldValue) {
-    expect(arguments.length).toEqual(2);
+    ok(2 === arguments.length);
     return newValue;
   })
-  expect(box.get(updateTestingKey)).toEqual(newValue);
+  ok(box.get(updateTestingKey) === newValue);
 
-  expect(box.get(updateTestingKey)).not.toBe(undefined);
-  expect(box.get(updateTestingKey)).not.toBe(null);
-  expect(typeof box.get(updateTestingKey)).toEqual('object');
+  ok(box.get(updateTestingKey) !== undefined);
+  ok(box.get(updateTestingKey) !== null);
+  ok('object' === typeof box.get(updateTestingKey));
 
-  expect(box.get(updateTestingKey).Tom).not.toBe(undefined);
-  expect(box.get(updateTestingKey).Tom).not.toBe(null);
-  expect(typeof box.get(updateTestingKey).Tom).toEqual('object');
+  ok(box.get(updateTestingKey).Tom !== undefined);
+  ok(box.get(updateTestingKey).Tom !== null);
+  ok('object' === typeof box.get(updateTestingKey).Tom);
 
-  expect(box.get(updateTestingKey).Tom.age).not.toBe(undefined);
-  expect(box.get(updateTestingKey).Tom.age).not.toBe(null);
-  expect(typeof box.get(updateTestingKey).Tom.age).toEqual('number');
-  expect(box.get(updateTestingKey).Tom.age).toEqual(3);
+  ok(box.get(updateTestingKey).Tom.age !== undefined);
+  ok(box.get(updateTestingKey).Tom.age !== null);
+  ok('number' === typeof box.get(updateTestingKey).Tom.age);
+  ok(3 === box.get(updateTestingKey).Tom.age);
 
-  
+  return true;
+})(), 'box.update() a new reference')
+
+var unwatch = box.watchVariable(updateTestingKey, function (event) {
+  ok('function' === typeof unwatch);
+  unwatch();
+  ok('object' === typeof event);
+  ok('update' === event.eventType);
 });
 
 
-test('box.watchVariable() for update the old reference', function () {
-  var unwatch = box.watchVariable(updateTestingKey, function (event) {
-    expect(typeof unwatch).toEqual('function');
-    unwatch();
-    expect(typeof event).toEqual('object');
-    expect(event.eventType).toEqual('update');
-  });
-});
-
-test('box.update() the old reference', function () {
-  expect(box.get(updateTestingKey).Tom.age).not.toBe(undefined);
-  expect(box.get(updateTestingKey).Tom.age).not.toBe(null);
-  expect(typeof box.get(updateTestingKey).Tom.age).toEqual('number');
-  expect(box.get(updateTestingKey).Tom.age).toEqual(3);
+ok((function () {
+  ok(box.get(updateTestingKey).Tom.age !== undefined);
+  ok(box.get(updateTestingKey).Tom.age !== null);
+  ok('number' === typeof box.get(updateTestingKey).Tom.age);
+  ok(3 === box.get(updateTestingKey).Tom.age);
 
   var oldAge = box.get(updateTestingKey).Tom.age;
 
   box.update(updateTestingKey, function (oldValue) {
-    expect(arguments.length).toEqual(2);
+    ok(2 === arguments.length);
     oldValue.Tom.age += 1;
     return oldValue;
   })
-  expect(box.get(updateTestingKey).Tom.age).toEqual(oldAge + 1)
-  
-});
+  ok((oldAge + 1) === box.get(updateTestingKey).Tom.age);
+  return true;
+})(), 'box.update() the old reference');
 
-test.todo('box.watchPath()');
-test.todo('box.get()');
-test.todo('box.set()');
-test.todo('box.merge()');
+/*
+todo('box.watchPath()');
+todo('box.get()');
+todo('box.set()');
+todo('box.merge()');
+*/
+
+console.info('All testing case passed');

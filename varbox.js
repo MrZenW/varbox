@@ -13,7 +13,7 @@
    * the undefined variable is used to avoid the programmer I 
    * to use the undefined variable directly
    */
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars, no-shadow-restricted-names
   var undefined = _undefined();
 
   // var MATCHING_TYPE_PATH = 'MATCHING_TYPE_PATH';
@@ -741,7 +741,7 @@
     getBox: getBox,
     createVarBox: createBox,
     getVarBox: getBox,
-    createEvent: createEventBox,
+    createEventBox: createEventBox,
     getEventBox: getEventBox,
   };
   if ('object' === typeof module) module.exports = Varbox;

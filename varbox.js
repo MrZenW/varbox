@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // eslint-disable-next-line no-extra-semi
 ;
 'use strict';
@@ -89,6 +90,98 @@
       }
     }
     return to;
+  }
+
+  var EVENTBOXES = {};
+  var eventBoxIdCounter = 0;
+  function createEventBox (eventBoxId) {
+    var _eventBox = getEventBox(eventBoxId);
+    if (_eventBox) return _eventBox;
+    eventBoxIdCounter += 1;
+    eventBoxId = eventBoxIdCounter;
+    var _events = {};
+    var _onceEvents = {};
+    function _off(eveName, eveFunc) {
+      var events = _events[eveName] || [];
+      if (events.length > 0) {
+        var eventsFilted = [];
+        for (var i = 0; i < events.length; i += 1) {
+          var func = events[i];
+          if (func !== eveFunc) eventsFilted.push(func);
+        }
+        _events[eveName] = events;
+      }
+  
+      var onceEvents = _onceEvents[eveName] || [];
+      if (onceEvents.length > 0) {
+        var onceEventsFilted = [];
+        for (var onceI = 0; onceI < onceEvents.length; onceI += 1) {
+          var onceFunc = onceEvents[onceI];
+          if (onceFunc !== eveFunc) onceEventsFilted.push(onceFunc);
+        }
+        _onceEvents[eveName] = onceEventsFilted;
+      }
+  
+      return this;
+    }
+  
+    function _on(eveName, eveFunc) {
+      _off(eveName, eveFunc);
+      _onceEvents[eveName] = _onceEvents[eveName] || [];
+      _events[eveName] = _events[eveName] || [];
+      _events[eveName].push(eveFunc);
+      if (_onceEvents[eveName].length + _events[eveName].length > 10) {
+        console.warn('on: More than 10 listeners on the event "' + eveName + '". Details: On ' + _events[eveName].length + ', Once ' + _onceEvents[eveName].length);
+      }
+      return this;
+    }
+  
+    function _once(eveName, eveFunc) {
+      _off(eveName, eveFunc);
+      _events[eveName] = _events[eveName] || [];
+      _onceEvents[eveName] = _onceEvents[eveName] || [];
+      _onceEvents[eveName].push(eveFunc);
+      if (_onceEvents[eveName].length + _events[eveName].length > 10) {
+        console.warn('once: More than 10 listeners on the event "' + eveName + '". Details: On ' + _events[eveName].length + ', Once ' + _onceEvents[eveName].length);
+      }
+      return this;
+    }
+  
+    function _emit(eveName/*, eveArgument1*/) {
+      var eveArgs = (arguments.length > 1) ? Array.prototype.slice.call(arguments, 1) : [];
+  
+      var events = _events[eveName] || [];
+      var eventSize = events.length;
+      if (eventSize > 0) {
+        for (var i = 1; i < eventSize; i += 1) {
+          var func = events[i];
+          if (_isFunction(func)) func.apply(this, eveArgs);
+        }
+      }
+  
+      //once
+      var onceEvents = _onceEvents[eveName] || [];
+      while (onceEvents.length > 0) {
+        var onceFunc = onceEvents.pop();
+        if (_isFunction(onceFunc)) onceFunc.apply(this, eveArgs);
+      }
+      return this;
+    }
+    EVENTBOXES[eventBoxId] = {
+      on: _on,
+      once: _once,
+      off: _off,
+      emit: _emit,
+    };
+    return getEventBox(eventBoxId);
+  }
+
+  function getEventBox(eventBoxId) {
+    var eventBox = EVENTBOXES[eventBoxId];
+    if (eventBox) {
+      return _merge({}, eventBox);
+    }
+    return eventBox;
   }
 
   function $destory(variable, callback, $path) {
@@ -642,7 +735,15 @@
     if (theBox) return _merge({}, theBox);
     return _undefined();
   }
-  var Varbox = { createBox: createBox, getBox: getBox };
+
+  var Varbox = {
+    createBox: createBox,
+    getBox: getBox,
+    createVarBox: createBox,
+    getVarBox: getBox,
+    createEvent: createEventBox,
+    getEventBox: getEventBox,
+  };
   if ('object' === typeof module) module.exports = Varbox;
   if ('object' === typeof window) window.Varbox = Varbox;
   if ('object' === typeof self) self.Varbox = Varbox;

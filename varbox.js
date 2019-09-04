@@ -760,7 +760,7 @@
     getVarBox: getVarBox,
     createEventBox: createEventBox,
     getEventBox: getEventBox,
-    version: '1.0.0',
+    version: '1.2.0',
   };
   if ('object' === typeof module) module.exports = VarBox;
   if ('object' === typeof window) window.VarBox = VarBox;

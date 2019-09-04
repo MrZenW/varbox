@@ -14,16 +14,16 @@ $ npm install varbox
 
 ----------
 
-### Varbox.<strong>createBox([opt])</strong>
+### Varbox.<strong>createVarBox([opt])</strong>
 
 Create a variable box
 
 ```JavaScript
-var box = Varbox.createBox();
+var box = Varbox.createVarBox();
 // or
-var box = Varbox.createBox('custom_box_name');
+var box = Varbox.createVarBox('custom_box_name');
 // or
-var box = Varbox.createBox({
+var box = Varbox.createVarBox({
   ROOT_PATH: ['ROOT'],
   PATH_SEPARATOR: '/',
   BOX_NAME: 'custom_box_name',
@@ -32,14 +32,14 @@ var box = Varbox.createBox({
 
 ----------
 
-### Varbox.<strong>getBox([boxName])</strong>
+### Varbox.<strong>getVarBox([boxName])</strong>
 
 return a varbox by the argument `boxName`, it will return all of the boxes if there is no argument given.
 
 ```JavaScript
-var box = Varbox.getBox('boxName');
+var box = Varbox.getVarBox('boxName');
 // or
-var allBoxes = Varbox.getBox();
+var allBoxes = Varbox.getVarBox();
 ```
 
 ----------
@@ -51,16 +51,19 @@ Through a valueSource function to set a value to the path of the box
 ***The argument path can be null or undefined, it means update the root path variable in the box***
 
 ```JavaScript
-box.update(['classrooms', 'A','students', 'Ruofei', 'age'], function valueSource(oldValue) {
-  return 4
+box.update(['classrooms', 'A','students', 'Ruofei', 'age'], function valueSource(sourceEvent) {
+  sourceEvent.newValue = 4;
+  sourceEvent.customKey = 'this is a custom key as you want the key name';
+  return sourceEvent;
 });
 /* If you want to set a function as the value you should do the following. */
-box.update(['classrooms', 'A','students', 'Ruofei', 'ageComputeFunction'], function valueSource(oldValue, doesTheKeyExist) {
+box.update(['classrooms', 'A','students', 'Ruofei', 'ageComputeFunction'], function valueSource(sourceEvent, doesTheKeyExist) {
   /* a function which is the value instead of the valueSource */
-  return function notValueSource() {
+  sourceEvent.newValue = function notValueSource() {
     // your codes
     return 3 + 1;
   };
+  return sourceEvent;
 });
 ```
 

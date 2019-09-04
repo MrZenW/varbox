@@ -95,10 +95,13 @@
   var EVENTBOXES = {};
   var eventBoxIdCounter = 0;
   function createEventBox (eventBoxId) {
-    var _eventBox = getEventBox(eventBoxId);
-    if (_eventBox) return _eventBox;
     eventBoxIdCounter += 1;
-    eventBoxId = eventBoxIdCounter;
+    if (eventBoxId) {
+      var _eventBox = getEventBox(eventBoxId);
+      if (_eventBox) return _eventBox;
+    } else {
+      eventBoxId = eventBoxIdCounter;
+    }
     var _events = {};
     var _onceEvents = {};
     function _off(eveName, eveFunc) {
@@ -217,7 +220,10 @@
     }
   }
   function $set(rootVariable, pathArray, value, callback) {
-    function setSourceValueWrapping () { return value; }
+    function setSourceValueWrapping (sourceEvent) {
+      sourceEvent.newValue = value;
+      return sourceEvent;
+    }
     function updateCallback (event) {
       event.sourceValue = value;
       callback(event);
@@ -240,13 +246,7 @@
         } else {
           eventType = 'add';
         }
-        
-        var newValue = valueSource(oldValue, doesTheKeyExist);
-        nodeInfo.variable[nodeInfo.key] = newValue;
-        if (isOldValueObject && _isObject(newValue) && _is(oldValue, newValue)) {
-          eventType = 'update';
-        }
-        callback({
+        var targetEvent = {
           eventType: eventType,
           variable: nodeInfo.variable,
           key: nodeInfo.key,
@@ -254,8 +254,16 @@
           targetPath: nodeInfo.targetPath,
           // sourceValue: valueSource,
           oldValue: oldValue,
-          newValue: nodeInfo.variable[nodeInfo.key],
-        });
+        };
+        var newValueEvent = valueSource(_merge({}, targetEvent), doesTheKeyExist);
+        targetEvent = _merge({}, newValueEvent, targetEvent);
+        var newValue = targetEvent.newValue;
+        nodeInfo.variable[nodeInfo.key] = newValue;
+        if (isOldValueObject && _isObject(newValue) && _is(oldValue, newValue)) {
+          eventType = 'update';
+          targetEvent.eventType = eventType;
+        }
+        callback(targetEvent);
         return;
       }
       if (!doesTheKeyExist || !isOldValueObject) {
@@ -268,7 +276,7 @@
         oldValue = _undefined();
         if (doesTheKeyExist) oldValue = nodeInfo.variable[nodeInfo.key];
         nodeInfo.variable[nodeInfo.key] = {};
-        callback({
+        var nodeEvent = {
           eventType: eventType,
           variable: nodeInfo.variable,
           key: nodeInfo.key,
@@ -277,18 +285,26 @@
           // sourceValue: valueSource,
           oldValue: oldValue,
           newValue: nodeInfo.variable[nodeInfo.key],
-        });
+        };
+        callback(nodeEvent);
         return;
       }
       return;
     });
   }
   function $merge(rootVariable, pathArray, sourceValue, callback) {
-    function mergeSurceValueWrapping (oldValue) {
-      if (_isObject(oldValue) || _isArray(oldValue)) return _merge(oldValue, sourceValue);
-      if (_isObject(sourceValue)) return _merge({}, sourceValue);
-      if (_isArray(sourceValue)) return _merge([], sourceValue);
-      return sourceValue;
+    function mergeSurceValueWrapping (sourceEvent) {
+      var oldValue = sourceEvent.oldValue;
+      if (_isObject(oldValue) || _isArray(oldValue)) {
+        sourceEvent.newValue = _merge(oldValue, sourceValue);
+      } else if (_isObject(sourceValue)) {
+        sourceEvent.newValue = _merge({}, sourceValue);
+      } else if (_isArray(sourceValue)) {
+        sourceEvent.newValue = _merge([], sourceValue);
+      } else {
+        sourceEvent.newValue = sourceValue;
+      }
+      return sourceEvent;
     }
     function updateCallback (event) {
       event.sourceValue = sourceValue;
@@ -559,7 +575,7 @@
 
   var BOXES = {};
   var boxCounter = 0;
-  function createBox(opts) {
+  function createVarBox(opts) {
     // box name
     var BOX_NAME = _undefined();
     if ('string' === typeof opts) BOX_NAME = opts;
@@ -569,7 +585,7 @@
       boxCounter += 1;
       BOX_NAME = '' + boxCounter;
     }
-    var existedBox = getBox(BOX_NAME);
+    var existedBox = getVarBox(BOX_NAME);
     if (existedBox) return existedBox;
 
     var PATH_SEPARATOR = '/';
@@ -723,7 +739,7 @@
     BOXES[BOX_NAME] = theBox;
     return _merge({}, theBox);
   }
-  function getBox (boxName) {
+  function getVarBox (boxName) {
     if (0 === arguments.length) {
       var allBox = _merge({}, BOXES);
       for (var aBoxName in allBox) {
@@ -737,12 +753,13 @@
   }
 
   var Varbox = {
-    createBox: createBox,
-    getBox: getBox,
-    createVarBox: createBox,
-    getVarBox: getBox,
+    createBox: createVarBox,
+    getBox: getVarBox,
+    createVarBox: createVarBox,
+    getVarBox: getVarBox,
     createEventBox: createEventBox,
     getEventBox: getEventBox,
+    version: '1.0.0',
   };
   if ('object' === typeof module) module.exports = Varbox;
   if ('object' === typeof window) window.Varbox = Varbox;

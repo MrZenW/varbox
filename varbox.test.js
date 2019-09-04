@@ -178,9 +178,9 @@ var unwatch = box.watchVariable(updateTestingKey, function (event) {
 
 ok((function() {
   var newValue = { Tom: { age: 3 } };
-  box.update(updateTestingKey, function (oldValue) {
+  box.update(updateTestingKey, function (sourceEvent) {
     ok(2 === arguments.length);
-    return newValue;
+    return { newValue: newValue };
   })
   ok(box.get(updateTestingKey) === newValue);
 
@@ -216,10 +216,12 @@ ok((function () {
 
   var oldAge = box.get(updateTestingKey).Tom.age;
 
-  box.update(updateTestingKey, function (oldValue) {
+  box.update(updateTestingKey, function (sourceEvent) {
     ok(2 === arguments.length);
+    var oldValue = sourceEvent.oldValue;
     oldValue.Tom.age += 1;
-    return oldValue;
+    sourceEvent.newValue = oldValue;
+    return sourceEvent;
   })
   ok((oldAge + 1) === box.get(updateTestingKey).Tom.age);
   return true;

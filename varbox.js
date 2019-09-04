@@ -255,7 +255,9 @@
           // sourceValue: valueSource,
           oldValue: oldValue,
         };
-        var newValueEvent = _merge({}, targetEvent);
+        var newValueEvent = _merge({
+          newValue: oldValue, // put the oldValue to newValue let caller modify
+        }, targetEvent);
         valueSource(newValueEvent, doesTheKeyExist);
         targetEvent = _merge({}, newValueEvent, targetEvent);
         var newValue = targetEvent.newValue;
@@ -760,7 +762,7 @@
     getVarBox: getVarBox,
     createEventBox: createEventBox,
     getEventBox: getEventBox,
-    version: '1.2.0',
+    version: '1.2.1',
   };
   if ('object' === typeof module) module.exports = VarBox;
   if ('object' === typeof window) window.VarBox = VarBox;

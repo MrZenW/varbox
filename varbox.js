@@ -255,7 +255,8 @@
           // sourceValue: valueSource,
           oldValue: oldValue,
         };
-        var newValueEvent = valueSource(_merge({}, targetEvent), doesTheKeyExist);
+        var newValueEvent = _merge({}, targetEvent);
+        valueSource(newValueEvent, doesTheKeyExist);
         targetEvent = _merge({}, newValueEvent, targetEvent);
         var newValue = targetEvent.newValue;
         nodeInfo.variable[nodeInfo.key] = newValue;

@@ -54,7 +54,6 @@ Through a valueSource function to set a value to the path of the box
 box.update(['classrooms', 'A','students', 'Ruofei', 'age'], function valueSource(sourceEvent) {
   sourceEvent.newValue = 4;
   sourceEvent.customKey = 'this is a custom key as you want the key name';
-  return sourceEvent;
 });
 /* If you want to set a function as the value you should do the following. */
 box.update(['classrooms', 'A','students', 'Ruofei', 'ageComputeFunction'], function valueSource(sourceEvent, doesTheKeyExist) {
@@ -63,7 +62,6 @@ box.update(['classrooms', 'A','students', 'Ruofei', 'ageComputeFunction'], funct
     // your codes
     return 3 + 1;
   };
-  return sourceEvent;
 });
 ```
 

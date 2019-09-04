@@ -180,7 +180,7 @@ ok((function() {
   var newValue = { Tom: { age: 3 } };
   box.update(updateTestingKey, function (sourceEvent) {
     ok(2 === arguments.length);
-    return { newValue: newValue };
+    sourceEvent.newValue = newValue;
   })
   ok(box.get(updateTestingKey) === newValue);
 

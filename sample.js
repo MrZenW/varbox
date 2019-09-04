@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-var Varbox = require('./varbox');
+var VarBox = require('./varbox');
 
-var box = Varbox.createBox({
+var box = VarBox.createBox({
   ROOT_PATH: ['ROOT'],
   PATH_SEPARATOR: '/',
   BOX_NAME: 'custom_box_name',
@@ -15,14 +15,14 @@ var unwatchVariableFunction = box.watchVariable('key/user/name2', function (even
   console.log('#event from watchVariable: %o', event);
 });
 
-box.set('key/user/name', 'Varbox');
-console.log('#set "key/usr/name" to "Varbox": %o', box.get());
+box.set('key/user/name', 'VarBox');
+console.log('#set "key/usr/name" to "VarBox": %o', box.get());
 
-box.merge('key/user/name2', 'Varbox2');
-console.log('#merge "key/user/name2" to Varbox2: %o', box.get());
+box.merge('key/user/name2', 'VarBox2');
+console.log('#merge "key/user/name2" to VarBox2: %o', box.get());
 
 box.merge('key/user/name2/last', 'last name');
-console.log('#merge "key/user/name2/last" to Varbox2: %o', box.get());
+console.log('#merge "key/user/name2/last" to VarBox2: %o', box.get());
 
 box.destory('key/user');
 // console.log('#destory "key/user": %o', box.get());
@@ -30,7 +30,7 @@ box.destory('key/user');
 box.destory();
 console.log('#destory whole varbox: %o', box.get());
 
-box.delete('key', 'Varbox2');
+box.delete('key', 'VarBox2');
 console.log('#delete "key"', box.get());
 
 box.set(null, '123');
@@ -55,4 +55,4 @@ console.log('There won\'t be no more event appear there, because the varbox has 
 
 
 
-// box.set('newkey/user/name', 'new Varbox');
+// box.set('newkey/user/name', 'new VarBox');

@@ -1,17 +1,17 @@
 var assert = require('assert');
 var ok = assert.ok;
-var Varbox;
+var VarBox;
 
 ok((function () {
-  Varbox = require('./varbox');
+  VarBox = require('./varbox');
 
-  ok('createBox' in Varbox);
-  ok('function' === typeof Varbox.createBox);
-  ok(1 === Varbox.createBox.length);
+  ok('createBox' in VarBox);
+  ok('function' === typeof VarBox.createBox);
+  ok(1 === VarBox.createBox.length);
 
-  ok('getBox' in Varbox);
-  ok('function' === typeof Varbox.getBox);
-  ok(1 === Varbox.getBox.length);
+  ok('getBox' in VarBox);
+  ok('function' === typeof VarBox.getBox);
+  ok(1 === VarBox.getBox.length);
   return true;
 })(), 'require("varbox")');
 
@@ -19,7 +19,7 @@ var box;
 var updateTestingKey = 'testUpdate';
 
 ok((function() {
-  box = Varbox.createBox('firstBox');
+  box = VarBox.createBox('firstBox');
 
   ok('get' in box);
   ok('function' === typeof box.get);
@@ -74,13 +74,13 @@ ok((function() {
   ok(2 === box.everyNode.length);
 
   return true;
-})(), 'Varbox.createBox()');
+})(), 'VarBox.createBox()');
 
 ok((function() {
-  var box = Varbox.createBox('firstBox');
-  var boxGetAgain1 = Varbox.createBox('firstBox');
+  var box = VarBox.createBox('firstBox');
+  var boxGetAgain1 = VarBox.createBox('firstBox');
 
-  var boxGetAgain2 = Varbox.createBox({
+  var boxGetAgain2 = VarBox.createBox({
     BOX_NAME: 'firstBox',
   });
 
@@ -95,17 +95,17 @@ ok((function() {
     ok(boxGetAgain2[k] === boxGetAgain1[k]);
   }
   return true;
-})(), 'Varbox.createBox() with the same box name: firstBox');
+})(), 'VarBox.createBox() with the same box name: firstBox');
 
 ok((function() {
-  var box = Varbox.createBox('firstBox');
+  var box = VarBox.createBox('firstBox');
 
-  var otherBox1 = Varbox.createBox('secondBox');
-  var otherBox2 = Varbox.createBox({
+  var otherBox1 = VarBox.createBox('secondBox');
+  var otherBox2 = VarBox.createBox({
     BOX_NAME: 'secondBoxWithJSONConfiguration',
   });
-  var otherBox3 = Varbox.createBox('');
-  var otherBox4 = Varbox.createBox();
+  var otherBox3 = VarBox.createBox('');
+  var otherBox4 = VarBox.createBox();
 
   for (var k in box) {
     ok(box[k] !== otherBox1[k]);
@@ -134,16 +134,16 @@ ok((function() {
     ok(otherBox4[k] !== otherBox3[k]);
   }
   return true;
-})(), 'Varbox.createBox() with different box name');
+})(), 'VarBox.createBox() with different box name');
 
 ok((function(){
-  var box = Varbox.createBox();
+  var box = VarBox.createBox();
 
-  var boxGetAgain1 = Varbox.createBox('');
-  var boxGetAgain2 = Varbox.createBox({
+  var boxGetAgain1 = VarBox.createBox('');
+  var boxGetAgain2 = VarBox.createBox({
     BOX_NAME: '',
   });
-  var boxGetAgain3 = Varbox.createBox({});
+  var boxGetAgain3 = VarBox.createBox({});
 
   for (var k in box) {
     ok(box[k] !== boxGetAgain1[k]);
@@ -163,7 +163,7 @@ ok((function(){
     ok(boxGetAgain3[k] !== boxGetAgain2[k]);
   }
   return true;
-})(), 'Varbox.createBox() with empty box name');
+})(), 'VarBox.createBox() with empty box name');
 
 box.watch(function (event) {
   ok('object' === typeof event);

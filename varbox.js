@@ -752,7 +752,7 @@
     return _undefined();
   }
 
-  var Varbox = {
+  var VarBox = {
     createBox: createVarBox,
     getBox: getVarBox,
     createVarBox: createVarBox,
@@ -761,7 +761,7 @@
     getEventBox: getEventBox,
     version: '1.0.0',
   };
-  if ('object' === typeof module) module.exports = Varbox;
-  if ('object' === typeof window) window.Varbox = Varbox;
-  if ('object' === typeof self) self.Varbox = Varbox;
+  if ('object' === typeof module) module.exports = VarBox;
+  if ('object' === typeof window) window.VarBox = VarBox;
+  if ('object' === typeof self) self.VarBox = VarBox;
 })();

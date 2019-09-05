@@ -35,8 +35,8 @@
   },
   "homepage": "https://github.com/zenboss/varbox#readme",
   "devDependencies": {
-    "eslint": "^6.0.1",
+    "eslint": "^6.3.0",
     "git-cz": "^3.2.1",
-    "husky": "^3.0.0"
+    "husky": "^3.0.5"
   }
 }

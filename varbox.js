@@ -112,7 +112,7 @@
           var func = events[i];
           if (func !== eveFunc) eventsFilted.push(func);
         }
-        _events[eveName] = events;
+        _events[eveName] = eventsFilted;
       }
   
       var onceEvents = _onceEvents[eveName] || [];
@@ -129,6 +129,10 @@
     }
   
     function _on(eveName, eveFunc) {
+      if(!_isFunction(eveFunc)) {
+        console.warn('Expecting a callback function as the second argument.');
+        return this;
+      }
       _off(eveName, eveFunc);
       _onceEvents[eveName] = _onceEvents[eveName] || [];
       _events[eveName] = _events[eveName] || [];
@@ -140,6 +144,10 @@
     }
   
     function _once(eveName, eveFunc) {
+      if(!_isFunction(eveFunc)) {
+        console.warn('Expecting a callback function as the second argument.');
+        return this;
+      }
       _off(eveName, eveFunc);
       _events[eveName] = _events[eveName] || [];
       _onceEvents[eveName] = _onceEvents[eveName] || [];
@@ -152,21 +160,18 @@
   
     function _emit(eveName/*, eveArgument1*/) {
       var eveArgs = (arguments.length > 1) ? Array.prototype.slice.call(arguments, 1) : [];
-  
       var events = _events[eveName] || [];
       var eventSize = events.length;
       if (eventSize > 0) {
-        for (var i = 1; i < eventSize; i += 1) {
-          var func = events[i];
-          if (_isFunction(func)) func.apply(this, eveArgs);
+        for (var i = 0; i < eventSize; i += 1) {
+          events[i].apply(this, eveArgs);
         }
       }
   
       //once
       var onceEvents = _onceEvents[eveName] || [];
       while (onceEvents.length > 0) {
-        var onceFunc = onceEvents.pop();
-        if (_isFunction(onceFunc)) onceFunc.apply(this, eveArgs);
+        onceEvents.pop().apply(this, eveArgs);
       }
       return this;
     }
@@ -762,7 +767,7 @@
     getVarBox: getVarBox,
     createEventBox: createEventBox,
     getEventBox: getEventBox,
-    version: '1.2.1',
+    version: '1.2.2',
   };
   if ('object' === typeof module) module.exports = VarBox;
   if ('object' === typeof window) window.VarBox = VarBox;

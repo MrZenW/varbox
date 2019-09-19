@@ -1,6 +1,6 @@
 {
   "name": "varbox",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "An observable variable box",
   "main": "varbox.js",
   "scripts": {
@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/zenboss/varbox#readme",
   "devDependencies": {
-    "eslint": "^6.3.0",
+    "eslint": "^6.4.0",
     "git-cz": "^3.2.1",
     "husky": "^3.0.5"
   }

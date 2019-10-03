@@ -13,6 +13,8 @@ module.exports = {
         'ecmaVersion': 5
     },
     'rules': {
+        'no-console': 'off',
+        'no-extra-semi': 'off',
         'indent': [
             'error',
             2

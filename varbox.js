@@ -1,20 +1,18 @@
-/* eslint-disable no-console */
-// eslint-disable-next-line no-extra-semi
 ;
 'use strict';
 (function VarBoxModuleSpace() {
   /**
-   * the _undefined() function is used to avoid
+   * the _getUndefined() function is used to avoid
    * the programmer I make any mistake cause the
    * undefined variable to be overridden
    */
-  function _undefined (){ return void 0; }
+  function _getUndefined (){ return void 0; }
   /**
    * the undefined variable is used to avoid the programmer I 
    * to use the undefined variable directly
    */
   // eslint-disable-next-line no-unused-vars, no-shadow-restricted-names
-  var undefined = _undefined();
+  var undefined = _getUndefined();
 
   // var MATCHING_TYPE_PATH = 'MATCHING_TYPE_PATH';
   var MATCHING_TYPE_VARIABLE = 'MATCHING_TYPE_VARIABLE';
@@ -40,7 +38,7 @@
     }
   }
   function _isNone(value) {
-    if (value === _undefined() || null === value) return true;
+    if (value === _getUndefined() || null === value) return true;
     if (isNaN(value) && 'number' === typeof value) return true;
     return false;
   }
@@ -127,7 +125,7 @@
   
       return this;
     }
-  
+
     function _on(eveName, eveFunc) {
       if(!_isFunction(eveFunc)) {
         console.warn('Expecting a callback function as the second argument.');
@@ -186,10 +184,15 @@
 
   function getEventBox(eventBoxId) {
     var eventBox = EVENTBOXES[eventBoxId];
-    if (eventBox) {
-      return _merge({}, eventBox);
-    }
-    return eventBox;
+    if (eventBox) return _merge({}, eventBox);
+    return _getUndefined();
+  }
+
+  function grabEventBox(eventBoxId) {
+    if (arguments.length < 1) throw new Error('Need an argument as a event box name');
+    var eventBox = getEventBox(eventBoxId);
+    if (eventBox) return eventBox;
+    return createEventBox(eventBoxId);
   }
 
   function $destory(variable, callback, $path) {
@@ -281,7 +284,7 @@
         } else if (!isOldValueObject) {
           eventType = 'replace';
         }
-        oldValue = _undefined();
+        oldValue = _getUndefined();
         if (doesTheKeyExist) oldValue = nodeInfo.variable[nodeInfo.key];
         nodeInfo.variable[nodeInfo.key] = {};
         var nodeEvent = {
@@ -475,7 +478,7 @@
       }
     } else if (isTopLevel) {
       callback({
-        variable: _undefined(),
+        variable: _getUndefined(),
         key: itsKey,
         value: variable,
         path: itsPath,
@@ -581,14 +584,20 @@
     return pathArg;
   }
 
+  function _parseBoxOpts(opts) {
+    if ('string' === typeof opts) return { BOX_NAME: opts };
+    if (!_isObject(opts)) return {};
+    if (_has(opts, 'BOX_NAME')) opts['BOX_NAME'] = '' + opts['BOX_NAME'];
+    return opts;
+  }
+
   var BOXES = {};
   var boxCounter = 0;
   function createVarBox(opts) {
     // box name
-    var BOX_NAME = _undefined();
-    if ('string' === typeof opts) BOX_NAME = opts;
-    if (!_isObject(opts)) opts = {};
-    if (_has(opts, 'BOX_NAME')) BOX_NAME = '' + opts['BOX_NAME'];
+    opts = _parseBoxOpts(opts);
+    var BOX_NAME = opts.BOX_NAME;
+
     if (!BOX_NAME) {
       boxCounter += 1;
       BOX_NAME = '' + boxCounter;
@@ -612,7 +621,7 @@
       if (_isArray(event.path)) {
         event.path = event.path.slice(ROOT_PATH.length);
         if (0 === event.path.length) {
-          event.pathString = _undefined();
+          event.pathString = _getUndefined();
         } else {
           event.pathString = event.path.join(PATH_SEPARATOR);
         }
@@ -620,7 +629,7 @@
       if (_isArray(event.targetPath)) {
         event.targetPath = event.targetPath.slice(ROOT_PATH.length);
         if (0 === event.targetPath.length) {
-          event.targetPathString = _undefined();
+          event.targetPathString = _getUndefined();
         } else {
           event.targetPathString = event.targetPath.join(PATH_SEPARATOR);
         }
@@ -757,17 +766,25 @@
     }
     var theBox = BOXES[boxName];
     if (theBox) return _merge({}, theBox);
-    return _undefined();
+    return _getUndefined();
   }
-
+  function grabVarBox(opts) {
+    opts = _parseBoxOpts(opts);
+    if (!_has(opts, 'BOX_NAME')) throw new Error('Need to provide a BOX_NAME parameter!');
+    var theBox = getVarBox(opts.BOX_NAME);
+    if (theBox) return theBox;
+    return createVarBox(opts);
+  }
   var VarBox = {
     createBox: createVarBox,
     getBox: getVarBox,
     createVarBox: createVarBox,
     getVarBox: getVarBox,
+    grabVarBox: grabVarBox,
     createEventBox: createEventBox,
     getEventBox: getEventBox,
-    version: '1.2.2',
+    grabEventBox: grabEventBox,
+    version: '1.3.0',
   };
   if ('object' === typeof module) module.exports = VarBox;
   if ('object' === typeof window) window.VarBox = VarBox;

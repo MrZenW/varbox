@@ -12,6 +12,11 @@ ok((function () {
   ok('getBox' in VarBox);
   ok('function' === typeof VarBox.getBox);
   ok(1 === VarBox.getBox.length);
+
+  ok('grabVarBox' in VarBox);
+  ok('function' === typeof VarBox.grabVarBox);
+  ok(1 === VarBox.grabVarBox.length);
+
   return true;
 })(), 'require("varbox")');
 
@@ -107,7 +112,20 @@ ok((function() {
   var otherBox3 = VarBox.createBox('');
   var otherBox4 = VarBox.createBox();
 
+  var noneArgumentError = null;
+  var grabVarBox1 = null;
+  try {
+    grabVarBox1 = VarBox.grabVarBox();
+  } catch (error) {
+    noneArgumentError = error;
+  }
+  ok(noneArgumentError instanceof Error);
+  ok(grabVarBox1 === null);
+  var grabVarBox2 = VarBox.grabVarBox('grabVarBox2');
+
   for (var k in box) {
+    ok(k in grabVarBox2);
+
     ok(box[k] !== otherBox1[k]);
     ok(box[k] !== otherBox2[k]);
     ok(box[k] !== otherBox3[k]);

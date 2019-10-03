@@ -44,6 +44,23 @@ var allBoxes = VarBox.getVarBox();
 
 ----------
 
+### VarBox.<strong>grabVarBox([opt])</strong>
+
+Get a variable box, or create a variable box if it doesn't exist.
+
+```JavaScript
+var box = VarBox.grabVarBox();
+// or
+var box = VarBox.grabVarBox('custom_box_name');
+// or
+var box = VarBox.grabVarBox({
+  ROOT_PATH: ['ROOT'],
+  PATH_SEPARATOR: '/',
+  BOX_NAME: 'custom_box_name',
+});
+```
+
+----------
 ### VarBox.box#<strong>update(path, valueSource)</strong>
 
 Through a valueSource function to set a value to the path of the box

@@ -194,6 +194,16 @@ var unwatch = box.watchVariable(updateTestingKey, function (event) {
   ok('add' === event.eventType);
 });
 
+
+var newValue = 'new value 1';
+var unwatch2 = box.watchPath(/^a\/b\/c\/d$/, (event) => {
+  ok(event.newValue === newValue);
+  ok('function' === typeof unwatch2);
+  unwatch2();
+})
+box.set(['a'], 'a1');
+box.set(['a', 'b', 'c', 'd'], newValue);
+
 ok((function() {
   var newValue = { Tom: { age: 3 } };
   box.update(updateTestingKey, function (sourceEvent) {

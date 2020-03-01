@@ -698,40 +698,40 @@ var Varbox = (function VarboxModuleSpace() {
     if (theBox) return theBox;
     return createVarbox(opts);
   }
-  var Varbox = {
-    createBox: createVarbox,
-    createVarbox: createVarbox,
-    createVarBox: createVarbox,
-    getBox: getVarbox,
-    getVarbox: getVarbox,
-    getVarBox: getVarbox,
-    grabBox: grabVarbox,
-    grabVarBox: grabVarbox,
-    grabVarbox: grabVarbox,
-    version: '2.0.1',
-  };
-  if ('object' === typeof module) module.exports = Varbox;
+  function _VarboxModuleFactory() {
+    return {
+      createBox: createVarbox,
+      createVarbox: createVarbox,
+      createVarBox: createVarbox,
+      getBox: getVarbox,
+      getVarbox: getVarbox,
+      getVarBox: getVarbox,
+      grabBox: grabVarbox,
+      grabVarBox: grabVarbox,
+      grabVarbox: grabVarbox,
+      version: '2.0.2',
+    };
+  }
+  if ('object' === typeof module) module.exports = _VarboxModuleFactory();
   if ('object' === typeof window) {
-    window.Varbox = Varbox;
-    window.VarBox = Varbox;
+    window.Varbox = _VarboxModuleFactory();
+    window.VarBox = _VarboxModuleFactory();
   }
   if ('object' === typeof self) {
-    self.Varbox = Varbox;
-    self.VarBox = Varbox;
+    self.Varbox = _VarboxModuleFactory();
+    self.VarBox = _VarboxModuleFactory();
   }
   if ('object' === typeof this) {
-    this.Varbox = Varbox;
-    this.VarBox = Varbox;
+    this.Varbox = _VarboxModuleFactory();
+    this.VarBox = _VarboxModuleFactory();
   }
   if ('function' === typeof define && define.amd) {
-    define(['Varbox'], function AMDFactory() {
-      return Varbox;
-    });
+    define([], _VarboxModuleFactory);
   }
   if ('function' === typeof define && define.cmd) {
     define(function CMDFactory(_require, _exports, _module) {
-      module.exports = Varbox;
+      _module.exports = _VarboxModuleFactory();
     });
   }
-  return Varbox;
+  return _VarboxModuleFactory();
 })();

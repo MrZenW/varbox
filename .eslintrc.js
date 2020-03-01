@@ -15,6 +15,7 @@ module.exports = {
     'rules': {
         'no-console': 'off',
         'no-extra-semi': 'off',
+        'no-undef': 'off',
         'indent': [
             'error',
             2
@@ -30,6 +31,8 @@ module.exports = {
         'semi': [
             'error',
             'always'
-        ]
+        ],
+        'no-unused-vars': 0,
+        'no-shadow-restricted-names': 0,
     }
 };

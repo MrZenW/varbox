@@ -50,9 +50,9 @@ ok((function() {
   ok('function' === typeof box.delete);
   ok(1 === box.delete.length);
 
-  ok('destory' in box);
-  ok('function' === typeof box.destory);
-  ok(1 === box.destory.length);
+  ok('destroy' in box);
+  ok('function' === typeof box.destroy);
+  ok(1 === box.destroy.length);
 
   ok('watch' in box);
   ok('function' === typeof box.watch);
@@ -246,6 +246,7 @@ ok((function () {
 
   box.update(updateTestingKey, function (sourceEvent) {
     ok(2 === arguments.length);
+    ok(Object.prototype.hasOwnProperty.call(sourceEvent, 'exists'));
     var oldValue = sourceEvent.oldValue;
     oldValue.Tom.age += 1;
     sourceEvent.newValue = oldValue;

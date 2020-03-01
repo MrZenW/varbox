@@ -24,11 +24,13 @@ console.log('#merge "key/user/name2" to VarBox2: %o', box.get());
 box.merge('key/user/name2/last', 'last name');
 console.log('#merge "key/user/name2/last" to VarBox2: %o', box.get());
 
-box.destory('key/user');
-// console.log('#destory "key/user": %o', box.get());
+console.log(box.metadata('key/user/name2/last'), 'metadata');
 
-box.destory();
-console.log('#destory whole varbox: %o', box.get());
+box.destroy('key/user');
+console.log('#destroy "key/user": %o', box.get());
+
+box.destroy();
+console.log('#destroy whole varbox: %o', box.get());
 
 box.delete('key', 'VarBox2');
 console.log('#delete "key"', box.get());

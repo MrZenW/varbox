@@ -1,4 +1,4 @@
-# VarBox
+# Varbox
 **An observable variable box.**
 
 *Pure es5 with no any dependencies, no Promise feature dependence, no Proxy feature dependence, no modification on both the original variable and its prototype. Perfectly suitable for every JavaScript environment such as Node.JS and any browser.*
@@ -14,16 +14,16 @@ $ npm install varbox
 
 ----------
 
-### VarBox.<strong>createVarBox([opt])</strong>
+### Varbox.<strong>createVarbox([opt])</strong>
 
 Create a variable box
 
 ```JavaScript
-var box = VarBox.createVarBox();
+var box = Varbox.createVarbox();
 // or
-var box = VarBox.createVarBox('custom_box_name');
+var box = Varbox.createVarbox('custom_box_name');
 // or
-var box = VarBox.createVarBox({
+var box = Varbox.createVarbox({
   ROOT_PATH: ['ROOT'],
   PATH_SEPARATOR: '/',
   BOX_NAME: 'custom_box_name',
@@ -32,28 +32,28 @@ var box = VarBox.createVarBox({
 
 ----------
 
-### VarBox.<strong>getVarBox([boxName])</strong>
+### Varbox.<strong>getVarbox([boxName])</strong>
 
 return a varbox by the argument `boxName`, it will return all of the boxes if there is no argument given.
 
 ```JavaScript
-var box = VarBox.getVarBox('boxName');
+var box = Varbox.getVarbox('boxName');
 // or
-var allBoxes = VarBox.getVarBox();
+var allBoxes = Varbox.getVarbox();
 ```
 
 ----------
 
-### VarBox.<strong>grabVarBox([opt])</strong>
+### Varbox.<strong>grabVarbox([opt])</strong>
 
 Get a variable box, or create a variable box if it doesn't exist.
 
 ```JavaScript
-var box = VarBox.grabVarBox();
+var box = Varbox.grabVarbox();
 // or
-var box = VarBox.grabVarBox('custom_box_name');
+var box = Varbox.grabVarbox('custom_box_name');
 // or
-var box = VarBox.grabVarBox({
+var box = Varbox.grabVarbox({
   ROOT_PATH: ['ROOT'],
   PATH_SEPARATOR: '/',
   BOX_NAME: 'custom_box_name',
@@ -61,7 +61,7 @@ var box = VarBox.grabVarBox({
 ```
 
 ----------
-### VarBox.box#<strong>update(path, valueSource)</strong>
+### Varbox.box#<strong>update(path, valueSource)</strong>
 
 Through a valueSource function to set a value to the path of the box
 
@@ -86,7 +86,7 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 
 ----------
 
-### VarBox.box#<strong>get([path])</strong>
+### Varbox.box#<strong>get([path])</strong>
 
 ***The argument path can be null or undefined or don't give, it means get the root path variable in the box***
 
@@ -102,7 +102,7 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 
 ----------
 
-### VarBox.box#<strong>set(path, valueSource)</strong>
+### Varbox.box#<strong>set(path, valueSource)</strong>
 
 Set a value to the path of the box
 
@@ -118,7 +118,7 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 
 ----------
 
-### VarBox.box#<strong>merge(path, value)</strong>
+### Varbox.box#<strong>merge(path, value)</strong>
 
 Merge a variable into the current variable;
 
@@ -136,7 +136,36 @@ The path argument could be an `Array` or `String`, any other type of argument wi
 
 ----------
 
-### VarBox.box#<strong>has(path)</strong>
+### Varbox.box#<strong>metadata(path)</strong>
+
+Return a JSON object to describe the parameter `path`.
+
+```JavaScript
+box.metadata('classrooms/A/students/Ruofei');
+// or
+box.has(['classrooms', 'A','students', 'Ruofei']);
+// result
+{
+  exists: true,
+  value: { isAbsent: false },
+  targetPath: [ 'ROOT', 'classrooms', 'A', 'students', 'Ruofei' ],
+  key: 'Ruofei',
+  parentVariable: { students: [...] }
+} 
+// or
+{
+  exists: false,
+  targetPath: [ 'ROOT', 'classrooms', 'A', 'students', 'Ruofei2', 'a key' ],
+  interruptPath: [ 'ROOT', 'classrooms', 'A', 'students', 'Ruofei2' ],
+  interruptKey: 'Ruofei2',
+  parentVariable: { students: [...] }
+}
+
+```
+
+----------
+
+### Varbox.box#<strong>has(path)</strong>
 
 Return `true` or `false` to describe if the path exists.
 
@@ -148,7 +177,7 @@ box.has(['classrooms', 'A','students', 'Ruofei']);
 
 ----------
 
-### VarBox.box#<strong>delete(path)</strong>
+### Varbox.box#<strong>delete(path)</strong>
 
 Delete a variable which on the path.
 
@@ -160,21 +189,21 @@ box.delete(['classrooms', 'A','students', 'Ruofei']);
 
 ----------
 
-### VarBox.box#<strong>destory([path])</strong>
+### Varbox.box#<strong>destroy([path])</strong>
 
 Delete all of the properties of all of the variables on and under the path argument.
 
-***The argument path can be null or undefined, it means destory the root path variable in the box***
+***The argument path can be null or undefined, it means destroy the root path variable in the box***
 
 ```JavaScript
-box.destory('classrooms/A/students');
+box.destroy('classrooms/A/students');
 // or
-box.destory(['classrooms', 'A','students']);
+box.destroy(['classrooms', 'A','students']);
 ```
 
 ----------
 
-### VarBox.box#<strong>watch(watcher)</strong>
+### Varbox.box#<strong>watch(watcher)</strong>
 
 Watching any change of the box.
 
@@ -188,23 +217,23 @@ The watcher function has an argument which used to describe what change happened
 
 ```JavaScript
 {
-  eventType: 'set', // set, add, merge, delete, destory
-  variable: { name: 'VarBox', name2: 'VarBox2' },
+  eventType: 'set', // set, add, merge, delete, destroy
+  variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
   path: [ 'varbox', 'name2' ],
   pathString: 'varbox/name2',
   targetPath: [ 'varbox', 'name2' ],
   targetPathString: 'varbox/name2',
-  sourceValue: 'VarBox2', // It will be the input argument, in the set add merge cases
+  sourceValue: 'Varbox2', // It will be the input argument, in the set add merge cases
   oldValue: undefined,
-  newValue: 'VarBox2',
+  newValue: 'Varbox2',
   method: 'merge' 
 }
 ```
 
 ----------
 
-### VarBox.box#<strong>watchVariable(path, watcher)</strong>
+### Varbox.box#<strong>watchVariable(path, watcher)</strong>
 
 Watching all of the paths which ***UNDER*** the path argument of the box.
 
@@ -233,29 +262,29 @@ box.watchVariable(/^classrooms\/.*\/students/, function watcher(event) {
 });
 ```
 
-The path argument could be an `Array` or `String` or `RegExp`, any other type of argument will call the `VarBox.box#watch(watcher)` function.
+The path argument could be an `Array` or `String` or `RegExp`, any other type of argument will call the `Varbox.box#watch(watcher)` function.
 
 The watcher function has an argument which used to describe what change happened.
 
 ```JavaScript
 {
-  eventType: 'set', // set, add, merge, delete, destory
-  variable: { name: 'VarBox', name2: 'VarBox2' },
+  eventType: 'set', // set, add, merge, delete, destroy
+  variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
   path: [ 'varbox', 'name2' ],
   pathString: 'varbox/name2',
   targetPath: [ 'varbox', 'name2' ],
   targetPathString: 'varbox/name2',
-  sourceValue: 'VarBox2', // It will be the input argument, in the set add merge cases
+  sourceValue: 'Varbox2', // It will be the input argument, in the set add merge cases
   oldValue: undefined,
-  newValue: 'VarBox2',
+  newValue: 'Varbox2',
   method: 'merge' 
 }
 ```
 
 ----------
 
-### VarBox.box#<strong>watchPath()</strong>
+### Varbox.box#<strong>watchPath()</strong>
 
 Watching all of the paths which ***ABOVE*** the path argument of the box.
 
@@ -284,29 +313,29 @@ box.watchPath(/^classrooms\/.*\/students/, function watcher(event) {
 });
 ```
 
-The path argument could be an `Array` or `String` or `RegExp`, any other type of argument will call the `VarBox.box#watch(watcher)` function.
+The path argument could be an `Array` or `String` or `RegExp`, any other type of argument will call the `Varbox.box#watch(watcher)` function.
 
 The watcher function has an argument which used to describe what change happened.
 
 ```JavaScript
 {
-  eventType: 'set', // set, add, merge, delete, destory
-  variable: { name: 'VarBox', name2: 'VarBox2' },
+  eventType: 'set', // set, add, merge, delete, destroy
+  variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
   path: [ 'varbox', 'name2' ],
   pathString: 'varbox/name2',
   targetPath: [ 'varbox', 'name2' ],
   targetPathString: 'varbox/name2',
-  sourceValue: 'VarBox2', // It will be the input argument, in the set add merge cases
+  sourceValue: 'Varbox2', // It will be the input argument, in the set add merge cases
   oldValue: undefined,
-  newValue: 'VarBox2',
+  newValue: 'Varbox2',
   method: 'merge' 
 }
 ```
 
 ----------
 
-### VarBox.box#<strong>nodeMap(path[, checker])</strong>
+### Varbox.box#<strong>nodeMap(path[, checker])</strong>
 
 Enumerate all of the nodes in the path from left to right which in the argument path.
 
@@ -342,7 +371,7 @@ Return:
 
 ----------
 
-### VarBox.box#<strong>nodeBackMap(path[, checker])</strong>
+### Varbox.box#<strong>nodeBackMap(path[, checker])</strong>
 
 Enumerate all of the nodes in the path from right to left which in the argument path.
 
@@ -370,7 +399,7 @@ Checker argument:
 
 ----------
 
-### VarBox.box#<strong>everyNode(path, callback)</strong>
+### Varbox.box#<strong>everyNode(path, callback)</strong>
 
 Map all of the nodes which under the path argument of the box.
 

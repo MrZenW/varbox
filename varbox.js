@@ -1,6 +1,6 @@
 ;
-'use strict';
-(function VarBoxModuleSpace() {
+var Varbox = (function VarboxModuleSpace() {
+  'use strict';
   /**
    * the _getUndefined() function is used to avoid
    * the programmer I make any mistake cause the
@@ -11,7 +11,6 @@
    * the undefined variable is used to avoid the programmer I 
    * to use the undefined variable directly
    */
-  // eslint-disable-next-line no-unused-vars, no-shadow-restricted-names
   var undefined = _getUndefined();
 
   // var MATCHING_TYPE_PATH = 'MATCHING_TYPE_PATH';
@@ -19,10 +18,10 @@
 
   function BLANK_FUNCTION () {}
   function DEFAULT_EXIST_CHECKER (nodeInfo) {
-    return _has(nodeInfo.variable, nodeInfo.key);
+    return _has(nodeInfo.parentVariable, nodeInfo.key);
   }
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray#Polyfill
-  var ARRAY_TYPE_STRINGIFY = Object.prototype.toString.call(Array());
+  var ARRAY_TYPE_STRINGIFY = Object.prototype.toString.call([]);
   function _isArray(variable) {
     return Object.prototype.toString.call(variable) === ARRAY_TYPE_STRINGIFY;
   }
@@ -46,7 +45,7 @@
     if (_isNone(variable)) return false;
     var keyType = typeof key;
     if ('number' === keyType || 'string' === keyType) {
-      if (Array.isArray(variable)) {
+      if (_isArray(variable)) {
         var index = parseInt(key, 10);
         if (isNaN(index)) return false;
         return variable.length > index && index >= 0;
@@ -90,112 +89,7 @@
     return to;
   }
 
-  var EVENTBOXES = {};
-  var eventBoxIdCounter = 0;
-  function createEventBox (eventBoxId) {
-    eventBoxIdCounter += 1;
-    if (eventBoxId) {
-      var _eventBox = getEventBox(eventBoxId);
-      if (_eventBox) return _eventBox;
-    } else {
-      eventBoxId = eventBoxIdCounter;
-    }
-    var _events = {};
-    var _onceEvents = {};
-    function _off(eveName, eveFunc) {
-      var events = _events[eveName] || [];
-      if (events.length > 0) {
-        var eventsFilted = [];
-        for (var i = 0; i < events.length; i += 1) {
-          var func = events[i];
-          if (func !== eveFunc) eventsFilted.push(func);
-        }
-        _events[eveName] = eventsFilted;
-      }
-  
-      var onceEvents = _onceEvents[eveName] || [];
-      if (onceEvents.length > 0) {
-        var onceEventsFilted = [];
-        for (var onceI = 0; onceI < onceEvents.length; onceI += 1) {
-          var onceFunc = onceEvents[onceI];
-          if (onceFunc !== eveFunc) onceEventsFilted.push(onceFunc);
-        }
-        _onceEvents[eveName] = onceEventsFilted;
-      }
-  
-      return this;
-    }
-
-    function _on(eveName, eveFunc) {
-      if(!_isFunction(eveFunc)) {
-        console.warn('Expecting a callback function as the second argument.');
-        return this;
-      }
-      _off(eveName, eveFunc);
-      _onceEvents[eveName] = _onceEvents[eveName] || [];
-      _events[eveName] = _events[eveName] || [];
-      _events[eveName].push(eveFunc);
-      if (_onceEvents[eveName].length + _events[eveName].length > 10) {
-        console.warn('on: More than 10 listeners on the event "' + eveName + '". Details: On ' + _events[eveName].length + ', Once ' + _onceEvents[eveName].length);
-      }
-      return this;
-    }
-  
-    function _once(eveName, eveFunc) {
-      if(!_isFunction(eveFunc)) {
-        console.warn('Expecting a callback function as the second argument.');
-        return this;
-      }
-      _off(eveName, eveFunc);
-      _events[eveName] = _events[eveName] || [];
-      _onceEvents[eveName] = _onceEvents[eveName] || [];
-      _onceEvents[eveName].push(eveFunc);
-      if (_onceEvents[eveName].length + _events[eveName].length > 10) {
-        console.warn('once: More than 10 listeners on the event "' + eveName + '". Details: On ' + _events[eveName].length + ', Once ' + _onceEvents[eveName].length);
-      }
-      return this;
-    }
-  
-    function _emit(eveName/*, eveArgument1*/) {
-      var eveArgs = (arguments.length > 1) ? Array.prototype.slice.call(arguments, 1) : [];
-      var events = _events[eveName] || [];
-      var eventSize = events.length;
-      if (eventSize > 0) {
-        for (var i = 0; i < eventSize; i += 1) {
-          events[i].apply(this, eveArgs);
-        }
-      }
-  
-      //once
-      var onceEvents = _onceEvents[eveName] || [];
-      while (onceEvents.length > 0) {
-        onceEvents.pop().apply(this, eveArgs);
-      }
-      return this;
-    }
-    EVENTBOXES[eventBoxId] = {
-      on: _on,
-      once: _once,
-      off: _off,
-      emit: _emit,
-    };
-    return getEventBox(eventBoxId);
-  }
-
-  function getEventBox(eventBoxId) {
-    var eventBox = EVENTBOXES[eventBoxId];
-    if (eventBox) return _merge({}, eventBox);
-    return _getUndefined();
-  }
-
-  function grabEventBox(eventBoxId) {
-    if (arguments.length < 1) throw new Error('Need an argument as a event box name');
-    var eventBox = getEventBox(eventBoxId);
-    if (eventBox) return eventBox;
-    return createEventBox(eventBoxId);
-  }
-
-  function $destory(variable, callback, $path) {
+  function $destroy(variable, callback, $path) {
     if (_isObject(variable)) {
       $path = $path || [];
       if (_isArray(variable)) {
@@ -203,10 +97,10 @@
         while(variable.length) {
           index += 1;
           var arrayPath = [].concat($path, index);
-          $destory(variable.shift(), callback, arrayPath);
+          $destroy(variable.shift(), callback, arrayPath);
           callback({
-            eventType: 'destory',
-            variable: variable,
+            eventType: 'destroy',
+            // variable: variable,
             key: index,
             path: arrayPath,
           });
@@ -216,10 +110,10 @@
           var v = variable[key];
           delete variable[key];
           var objectPath = [].concat($path, key);
-          $destory(v, callback, objectPath);
+          $destroy(v, callback, objectPath);
           callback({
-            eventType: 'destory',
-            variable: variable,
+            eventType: 'destroy',
+            // variable: variable,
             key: key,
             path: objectPath,
           });
@@ -228,15 +122,15 @@
     }
   }
   function $set(rootVariable, pathArray, value, callback) {
-    function setSourceValueWrapping (sourceEvent) {
+    function setTargetValueWrapping (sourceEvent) {
       sourceEvent.newValue = value;
       return sourceEvent;
     }
     function updateCallback (event) {
-      event.sourceValue = value;
+      event.targetValue = value;
       callback(event);
     }
-    return $update(rootVariable, pathArray, setSourceValueWrapping, updateCallback);
+    return $update(rootVariable, pathArray, setTargetValueWrapping, updateCallback);
   }
   function $update(rootVariable, pathArray, valueSource, callback) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
@@ -244,10 +138,11 @@
     if (!_isFunction(valueSource)) throw new TypeError('Need a function for value source');
     if (!_isFunction(callback)) callback = BLANK_FUNCTION;
     return $nodeMap(rootVariable, pathArray, function _nodeMapSet(nodeInfo) {
-      var oldValue = nodeInfo.variable[nodeInfo.key];
+      var oldValue = nodeInfo.parentVariable[nodeInfo.key];
       var isOldValueObject = _isObject(oldValue);
-      var doesTheKeyExist = _has(nodeInfo.variable, nodeInfo.key);
-      var eventType;
+      var doesTheKeyExist = _has(nodeInfo.parentVariable, nodeInfo.key);
+      var eventType = null;
+      // the end of the path
       if (nodeInfo.path.length === nodeInfo.targetPath.length) {
         if (doesTheKeyExist) {
           eventType = 'replace';
@@ -256,46 +151,56 @@
         }
         var targetEvent = {
           eventType: eventType,
-          variable: nodeInfo.variable,
+          parentVariable: nodeInfo.parentVariable,
           key: nodeInfo.key,
           path: nodeInfo.path,
           targetPath: nodeInfo.targetPath,
-          // sourceValue: valueSource,
+          // targetValue: valueSource,
           oldValue: oldValue,
+          exists: doesTheKeyExist,
         };
-        var newValueEvent = _merge({
-          newValue: oldValue, // put the oldValue to newValue let caller modify
+        var refNewValueEvent = _merge({
+          // newValue: oldValue, // put the oldValue to newValue let caller modify
         }, targetEvent);
-        valueSource(newValueEvent, doesTheKeyExist);
-        targetEvent = _merge({}, newValueEvent, targetEvent);
-        var newValue = targetEvent.newValue;
-        nodeInfo.variable[nodeInfo.key] = newValue;
-        if (isOldValueObject && _isObject(newValue) && _is(oldValue, newValue)) {
-          eventType = 'update';
+        var returnNewValueEvent = valueSource(refNewValueEvent, doesTheKeyExist);
+        if (_isObject(returnNewValueEvent)) {
+          refNewValueEvent = returnNewValueEvent;
+        }
+        targetEvent = _merge({}, refNewValueEvent, targetEvent);
+        if (_has(targetEvent, 'newValue')) {
+          var newValue = targetEvent.newValue;
+          nodeInfo.parentVariable[nodeInfo.key] = newValue;
+          // check if modified the original variable
+          if (isOldValueObject && _isObject(newValue) && _is(oldValue, newValue)) {
+            eventType = 'update';
+            targetEvent.eventType = eventType;
+          }
+        } else {
+          eventType = null;
           targetEvent.eventType = eventType;
         }
         callback(targetEvent);
         return;
       }
       if (!doesTheKeyExist || !isOldValueObject) {
-        // a node but not exists, include null undefined NaN
+        // a node but does not exist, include null undefined NaN
         if (!doesTheKeyExist) {
           eventType = 'add';
         } else if (!isOldValueObject) {
           eventType = 'replace';
         }
         oldValue = _getUndefined();
-        if (doesTheKeyExist) oldValue = nodeInfo.variable[nodeInfo.key];
-        nodeInfo.variable[nodeInfo.key] = {};
+        if (doesTheKeyExist) oldValue = nodeInfo.parentVariable[nodeInfo.key];
+        nodeInfo.parentVariable[nodeInfo.key] = {};
         var nodeEvent = {
           eventType: eventType,
-          variable: nodeInfo.variable,
+          parentVariable: nodeInfo.parentVariable,
           key: nodeInfo.key,
           path: nodeInfo.path,
           targetPath: nodeInfo.targetPath,
-          // sourceValue: valueSource,
+          // targetValue: valueSource,
           oldValue: oldValue,
-          newValue: nodeInfo.variable[nodeInfo.key],
+          newValue: nodeInfo.parentVariable[nodeInfo.key],
         };
         callback(nodeEvent);
         return;
@@ -303,28 +208,28 @@
       return;
     });
   }
-  function $merge(rootVariable, pathArray, sourceValue, callback) {
+  function $merge(rootVariable, pathArray, targetValue, callback) {
     function mergeSurceValueWrapping (sourceEvent) {
       var oldValue = sourceEvent.oldValue;
       if (_isObject(oldValue) || _isArray(oldValue)) {
-        sourceEvent.newValue = _merge(oldValue, sourceValue);
-      } else if (_isObject(sourceValue)) {
-        sourceEvent.newValue = _merge({}, sourceValue);
-      } else if (_isArray(sourceValue)) {
-        sourceEvent.newValue = _merge([], sourceValue);
+        sourceEvent.newValue = _merge(oldValue, targetValue);
+      } else if (_isObject(targetValue)) {
+        sourceEvent.newValue = _merge({}, targetValue);
+      } else if (_isArray(targetValue)) {
+        sourceEvent.newValue = _merge([], targetValue);
       } else {
-        sourceEvent.newValue = sourceValue;
+        sourceEvent.newValue = targetValue;
       }
       return sourceEvent;
     }
     function updateCallback (event) {
-      event.sourceValue = sourceValue;
+      event.targetValue = targetValue;
       callback(event);
     }
     return $update(rootVariable, pathArray, mergeSurceValueWrapping, updateCallback);
-    // return $set(rootVariable, pathArray, sourceValue, callback, true);
+    // return $set(rootVariable, pathArray, targetValue, callback, true);
   }
-  // eslint-disable-next-line no-unused-vars
+
   function $deepMerge(varA, varB, path) {
     for (var key in varB) {
       var aNextV = varA[key];
@@ -358,15 +263,15 @@
     return $nodeMap(rootVariable, pathArray, function _nodeMapDelete(nodeInfo) {
       if (!DEFAULT_EXIST_CHECKER(nodeInfo)) return false;
       if (nodeInfo.path.length === nodeInfo.targetPath.length) {
-        var oldValue = nodeInfo.variable[nodeInfo.key];
-        if (_isArray(nodeInfo.variable)) {
-          nodeInfo.variable.splice(nodeInfo.key, 1);
+        var oldValue = nodeInfo.parentVariable[nodeInfo.key];
+        if (_isArray(nodeInfo.parentVariable)) {
+          nodeInfo.parentVariable.splice(nodeInfo.key, 1);
         } else {
-          delete nodeInfo.variable[nodeInfo.key];
+          delete nodeInfo.parentVariable[nodeInfo.key];
         }
         callback({
           eventType: 'delete',
-          variable: nodeInfo.variable,
+          parentVariable: nodeInfo.parentVariable,
           key: nodeInfo.key,
           path: nodeInfo.path,
           targetPath: nodeInfo.targetPath,
@@ -378,42 +283,54 @@
   }
 
   function $has(rootVariable, pathArray) {
-    return $nodeMap(rootVariable, pathArray).isExist;
+    return $nodeMap(rootVariable, pathArray).exists;
+  }
+
+  function $metadata(rootVariable, pathArray) {
+    return $nodeMap(rootVariable, pathArray);
   }
 
   function $nodeMap(rootVariable, pathArray, checker) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
     if (!_isFunction(checker)) checker = DEFAULT_EXIST_CHECKER;
+    pathArray = _merge([], pathArray);
     var parentVariable;
     var rootChildren = rootVariable;
-    var isExist = false;
+    var exists = true;
+    var currentKey;
+    var currentPath;
     for (var i = 0; i < pathArray.length; i += 1) {
       var pathIndex = i;
-      var currentKey = pathArray[pathIndex];
-      var currentPath = pathArray.slice(0, pathIndex + 1);
+      currentKey = pathArray[pathIndex];
+      currentPath = pathArray.slice(0, pathIndex + 1);  
       if (false !== checker({
-        variable: rootChildren,
+        parentVariable: rootChildren,
         key: currentKey,
         value: Object(rootChildren)[currentKey],
         path: currentPath,
         targetPath: pathArray,
       })) {
-        isExist = true;
+        exists = true;
         parentVariable = rootChildren;
         rootChildren = rootChildren[currentKey];
       } else {
-        isExist = false;
+        exists = false;
         return {
-          isExist: isExist,
-          variable: rootChildren,
+          exists: exists,
+          targetPath: pathArray,
+          interruptPath: currentPath,
+          interruptKey: currentKey,
+          parentVariable: rootChildren,
         };
       }
     }
     return {
-      isExist: isExist,
+      exists: exists,
       value: rootChildren,
-      variable: parentVariable,
+      targetPath: pathArray,
+      key: currentKey,
+      parentVariable: parentVariable,
     };
   }
 
@@ -426,7 +343,7 @@
     $nodeBackMap(_isObject(rootVariable) ? rootVariable[currentKey] : {}, pathArray, checker, $i - 1);
     var currentPath = pathArray.slice(0, $i);
     checker({
-      variable: rootVariable,
+      parentVariable: rootVariable,
       key: currentKey,
       value: Object(rootVariable)[currentKey],
       path: currentPath,
@@ -593,7 +510,7 @@
 
   var BOXES = {};
   var boxCounter = 0;
-  function createVarBox(opts) {
+  function createVarbox(opts) {
     // box name
     opts = _parseBoxOpts(opts);
     var BOX_NAME = opts.BOX_NAME;
@@ -602,7 +519,7 @@
       boxCounter += 1;
       BOX_NAME = '' + boxCounter;
     }
-    var existedBox = getVarBox(BOX_NAME);
+    var existedBox = getVarbox(BOX_NAME);
     if (existedBox) return existedBox;
 
     var PATH_SEPARATOR = '/';
@@ -654,8 +571,8 @@
       event.method = 'delete';
       return _onEvent(event);
     }
-    function _onEventForDestory(event) {
-      event.method = 'destory';
+    function _onEventForDestroy(event) {
+      event.method = 'destroy';
       return _onEvent(event);
     }
     function _unwatchGenerator(watcherId) {
@@ -704,16 +621,20 @@
     function watchVariable_ (matchPath, watcher) {
       return watchPath_(matchPath, watcher, MATCHING_TYPE_VARIABLE);
     }
+    function metadata_(pathArray) {
+      pathArray = _parsePathArgument(pathArray, PATH_SEPARATOR);
+      return $metadata(rootVariable, [].concat(ROOT_PATH, pathArray));
+    }
     function has_(pathArray) {
       pathArray = _parsePathArgument(pathArray, PATH_SEPARATOR);
       return $has(rootVariable, [].concat(ROOT_PATH, pathArray));
     }
-    function destory_(pathArray) {
+    function destroy_(pathArray) {
       pathArray = _parsePathArgument(pathArray, PATH_SEPARATOR);
       pathArray = [].concat(ROOT_PATH, pathArray);
       var v = $nodeMap(rootVariable, pathArray);
-      if (v.isExist) {
-        $destory(v.value, _onEventForDestory, pathArray);
+      if (v.exists) {
+        $destroy(v.value, _onEventForDestroy, pathArray);
       }
     }
     function nodeMap_(pathArray, checker) {
@@ -731,8 +652,8 @@
     function everyNode_(pathArray, callback) {
       pathArray = _parsePathArgument(pathArray, PATH_SEPARATOR);
       var v = $nodeMap(rootVariable, [].concat(ROOT_PATH, pathArray));
-      if (v.isExist) {
-        // $destory(v.value, _onEvent, pathArray);
+      if (v.exists) {
+        // $destroy(v.value, _onEvent, pathArray);
         return $everyNode(v.value, callback);
       } else {
         return callback(null);
@@ -743,9 +664,11 @@
       get: get_,
       set: set_,
       merge: merge_,
+      metadata: metadata_,
       has: has_,
+      have: has_,
       delete: delete_,
-      destory: destory_,
+      destroy: destroy_,
       watch: watch_,
       watchPath: watchPath_,
       watchVariable: watchVariable_,
@@ -756,7 +679,7 @@
     BOXES[BOX_NAME] = theBox;
     return _merge({}, theBox);
   }
-  function getVarBox (boxName) {
+  function getVarbox (boxName) {
     if (0 === arguments.length) {
       var allBox = _merge({}, BOXES);
       for (var aBoxName in allBox) {
@@ -768,25 +691,47 @@
     if (theBox) return _merge({}, theBox);
     return _getUndefined();
   }
-  function grabVarBox(opts) {
+  function grabVarbox(opts) {
     opts = _parseBoxOpts(opts);
     if (!_has(opts, 'BOX_NAME')) throw new Error('Need to provide a BOX_NAME parameter!');
-    var theBox = getVarBox(opts.BOX_NAME);
+    var theBox = getVarbox(opts.BOX_NAME);
     if (theBox) return theBox;
-    return createVarBox(opts);
+    return createVarbox(opts);
   }
-  var VarBox = {
-    createBox: createVarBox,
-    getBox: getVarBox,
-    createVarBox: createVarBox,
-    getVarBox: getVarBox,
-    grabVarBox: grabVarBox,
-    createEventBox: createEventBox,
-    getEventBox: getEventBox,
-    grabEventBox: grabEventBox,
-    version: '1.3.0',
+  var Varbox = {
+    createBox: createVarbox,
+    createVarbox: createVarbox,
+    createVarBox: createVarbox,
+    getBox: getVarbox,
+    getVarbox: getVarbox,
+    getVarBox: getVarbox,
+    grabBox: grabVarbox,
+    grabVarBox: grabVarbox,
+    grabVarbox: grabVarbox,
+    version: '2.0.1',
   };
-  if ('object' === typeof module) module.exports = VarBox;
-  if ('object' === typeof window) window.VarBox = VarBox;
-  if ('object' === typeof self) self.VarBox = VarBox;
+  if ('object' === typeof module) module.exports = Varbox;
+  if ('object' === typeof window) {
+    window.Varbox = Varbox;
+    window.VarBox = Varbox;
+  }
+  if ('object' === typeof self) {
+    self.Varbox = Varbox;
+    self.VarBox = Varbox;
+  }
+  if ('object' === typeof this) {
+    this.Varbox = Varbox;
+    this.VarBox = Varbox;
+  }
+  if ('function' === typeof define && define.amd) {
+    define(['Varbox'], function AMDFactory() {
+      return Varbox;
+    });
+  }
+  if ('function' === typeof define && define.cmd) {
+    define(function CMDFactory(_require, _exports, _module) {
+      module.exports = Varbox;
+    });
+  }
+  return Varbox;
 })();

@@ -201,6 +201,7 @@ var Varbox = (function VarboxModuleSpace() {
           // targetValue: valueSource,
           oldValue: oldValue,
           newValue: nodeInfo.parentVariable[nodeInfo.key],
+          exists: doesTheKeyExist,
         };
         callback(nodeEvent);
         return;

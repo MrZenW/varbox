@@ -256,12 +256,12 @@ var Varbox = (function VarboxModuleSpace() {
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
     return $nodeMap(rootVariable, pathArray).value;
   }
-  function $delete(rootVariable, pathArray, callback) {
+  function $remove(rootVariable, pathArray, callback) {
     if (!_isObject(rootVariable)) throw new TypeError('Need an object for variable');
     if (!_isArray(pathArray)) throw new TypeError('Need an array for path');
     if (!_isFunction(callback)) callback = BLANK_FUNCTION;
     var isBack = true;
-    return $nodeMap(rootVariable, pathArray, function _nodeMapDelete(nodeInfo) {
+    return $nodeMap(rootVariable, pathArray, function _nodeMapRemove(nodeInfo) {
       if (!DEFAULT_EXIST_CHECKER(nodeInfo)) return false;
       if (nodeInfo.path.length === nodeInfo.targetPath.length) {
         var oldValue = nodeInfo.parentVariable[nodeInfo.key];
@@ -271,7 +271,7 @@ var Varbox = (function VarboxModuleSpace() {
           delete nodeInfo.parentVariable[nodeInfo.key];
         }
         callback({
-          eventType: 'delete',
+          eventType: 'remove',
           parentVariable: nodeInfo.parentVariable,
           key: nodeInfo.key,
           path: nodeInfo.path,
@@ -568,8 +568,8 @@ var Varbox = (function VarboxModuleSpace() {
       event.method = 'merge';
       return _onEvent(event);
     }
-    function _onEventForDelete(event) {
-      event.method = 'delete';
+    function _onEventForRemove(event) {
+      event.method = 'remove';
       return _onEvent(event);
     }
     function _onEventForDestroy(event) {
@@ -601,9 +601,9 @@ var Varbox = (function VarboxModuleSpace() {
       pathArray = _parsePathArgument(pathArray, PATH_SEPARATOR);
       return $get(rootVariable, [].concat(ROOT_PATH, pathArray));
     }
-    function delete_(pathArray) {
+    function remove_(pathArray) {
       pathArray = _parsePathArgument(pathArray, PATH_SEPARATOR);
-      return $delete(rootVariable, [].concat(ROOT_PATH, pathArray), _onEventForDelete);
+      return $remove(rootVariable, [].concat(ROOT_PATH, pathArray), _onEventForRemove);
     }
     function watchPath_ (matchPath, watcher, matchType) {
       if (!_isFunction(watcher)) throw new Error('Watcher should be a function');
@@ -668,7 +668,7 @@ var Varbox = (function VarboxModuleSpace() {
       metadata: metadata_,
       has: has_,
       have: has_,
-      delete: delete_,
+      remove: remove_,
       destroy: destroy_,
       watch: watch_,
       watchPath: watchPath_,
@@ -711,6 +711,11 @@ var Varbox = (function VarboxModuleSpace() {
       grabVarBox: grabVarbox,
       grabVarbox: grabVarbox,
       version: '2.0.2',
+      $get: $get,
+      $has: $has,
+      $have: $has,
+      $remove: $remove,
+      $set: $set,
     };
   }
   if ('object' === typeof module) module.exports = _VarboxModuleFactory();

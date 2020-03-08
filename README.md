@@ -179,7 +179,7 @@ box.has(['classrooms', 'A','students', 'Ruofei']);
 
 ### Varbox.box#<strong>remove(path)</strong>
 
-Delete a variable which on the path.
+Remove a variable which on the path.
 
 ```JavaScript
 box.remove('classrooms/A/students/Ruofei');
@@ -191,7 +191,7 @@ box.remove(['classrooms', 'A','students', 'Ruofei']);
 
 ### Varbox.box#<strong>destroy([path])</strong>
 
-Delete all of the properties of all of the variables on and under the path argument.
+Remove all of the properties of all of the variables on and under the path argument.
 
 ***The argument path can be null or undefined, it means destroy the root path variable in the box***
 

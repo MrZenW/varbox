@@ -46,9 +46,9 @@ ok((function() {
   ok('function' === typeof box.has);
   ok(1 === box.has.length);
 
-  ok('delete' in box);
-  ok('function' === typeof box.delete);
-  ok(1 === box.delete.length);
+  ok('remove' in box);
+  ok('function' === typeof box.remove);
+  ok(1 === box.remove.length);
 
   ok('destroy' in box);
   ok('function' === typeof box.destroy);

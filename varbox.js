@@ -413,7 +413,7 @@ var Varbox = (function VarboxModuleSpace() {
     return (regExp + '').replace(regExpForEscape, '\\$&');
   }
 
-  function _parseMatchPath (matchPath) {
+  function _parseMatchPath (matchPath, PATH_SEPARATOR) {
     var isMatchPathArray = false;
     var isMatchPathRegExp = false;
     if (_isArray(matchPath)) {
@@ -423,13 +423,14 @@ var Varbox = (function VarboxModuleSpace() {
       isMatchPathRegExp = true;
       matchPath = new RegExp(matchPath);
     } else { // string
-      isMatchPathArray = false;
-      isMatchPathRegExp = false;
       matchPath += ''; // toString
       if (matchPath.indexOf('+') > -1 || matchPath.indexOf('#') > -1) {
         isMatchPathRegExp = true;
         matchPath = _escapeRegExp(matchPath);
         matchPath = new RegExp('^' + matchPath.replace(/\\\+/g, '[^/]+').replace(/#/g, '.*') + '$');
+      } else {
+        isMatchPathArray = true;
+        matchPath = matchPath.split(PATH_SEPARATOR);
       }
     }
     return {
@@ -462,7 +463,7 @@ var Varbox = (function VarboxModuleSpace() {
       }
       return isMatched;
     } else {
-      return 0 === matchPath.indexOf(event.pathString);
+      return false;
     }
   }
 
@@ -489,10 +490,8 @@ var Varbox = (function VarboxModuleSpace() {
         }
       }
       return isMatched;
-    } else if ('string' === typeof event.pathString) {
-      return 0 === event.pathString.indexOf(matchPath);
     } else {
-      return event.pathString === matchPath;
+      return false;
     }
   }
 
@@ -608,7 +607,7 @@ var Varbox = (function VarboxModuleSpace() {
     function watchPath_ (matchPath, watcher, matchType) {
       if (!_isFunction(watcher)) throw new Error('Watcher should be a function');
       if (_isNone(matchPath)) return watch_(watcher);
-      var matchParseResult = _parseMatchPath(matchPath);
+      var matchParseResult = _parseMatchPath(matchPath, PATH_SEPARATOR);
       if (matchType === MATCHING_TYPE_VARIABLE) {
         return watch_(function watcherOnWatch (event) {
           if(_checkIfMatchedForWatchVariable(event, matchParseResult)) watcher(event);
@@ -716,6 +715,7 @@ var Varbox = (function VarboxModuleSpace() {
       $have: $has,
       $remove: $remove,
       $set: $set,
+      $metadata: $metadata,
     };
   }
   if ('object' === typeof module) module.exports = _VarboxModuleFactory();

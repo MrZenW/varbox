@@ -217,7 +217,7 @@ The watcher function has an argument which used to describe what change happened
 
 ```JavaScript
 {
-  eventType: 'set', // set, add, merge, remove, destroy
+  eventType: 'set', // null, add, replace, update, remove, destroy
   variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
   path: [ 'varbox', 'name2' ],
@@ -268,7 +268,7 @@ The watcher function has an argument which used to describe what change happened
 
 ```JavaScript
 {
-  eventType: 'set', // set, add, merge, remove, destroy
+  eventType: 'set', // null, add, replace, update, remove, destroy
   variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
   path: [ 'varbox', 'name2' ],
@@ -319,7 +319,7 @@ The watcher function has an argument which used to describe what change happened
 
 ```JavaScript
 {
-  eventType: 'set', // set, add, merge, remove, destroy
+  eventType: 'set', // null, add, replace, update, remove, destroy
   variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
   path: [ 'varbox', 'name2' ],

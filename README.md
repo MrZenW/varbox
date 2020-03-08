@@ -177,14 +177,14 @@ box.has(['classrooms', 'A','students', 'Ruofei']);
 
 ----------
 
-### Varbox.box#<strong>delete(path)</strong>
+### Varbox.box#<strong>remove(path)</strong>
 
 Delete a variable which on the path.
 
 ```JavaScript
-box.delete('classrooms/A/students/Ruofei');
+box.remove('classrooms/A/students/Ruofei');
 // or
-box.delete(['classrooms', 'A','students', 'Ruofei']);
+box.remove(['classrooms', 'A','students', 'Ruofei']);
 ```
 
 ----------
@@ -217,7 +217,7 @@ The watcher function has an argument which used to describe what change happened
 
 ```JavaScript
 {
-  eventType: 'set', // set, add, merge, delete, destroy
+  eventType: 'set', // set, add, merge, remove, destroy
   variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
   path: [ 'varbox', 'name2' ],
@@ -268,7 +268,7 @@ The watcher function has an argument which used to describe what change happened
 
 ```JavaScript
 {
-  eventType: 'set', // set, add, merge, delete, destroy
+  eventType: 'set', // set, add, merge, remove, destroy
   variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
   path: [ 'varbox', 'name2' ],
@@ -319,7 +319,7 @@ The watcher function has an argument which used to describe what change happened
 
 ```JavaScript
 {
-  eventType: 'set', // set, add, merge, delete, destroy
+  eventType: 'set', // set, add, merge, remove, destroy
   variable: { name: 'Varbox', name2: 'Varbox2' },
   key: 'name2',
   path: [ 'varbox', 'name2' ],
